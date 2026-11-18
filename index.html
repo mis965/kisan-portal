@@ -2959,9 +2959,13 @@ function ask(msg, label, cls) {
 
 
 /* ---------- session ---------- */
-function save() { try { sessionStorage.setItem('kl', JSON.stringify({ role: S.role, token: S.token, user: S.user, cfg: S.cfg })); } catch (e) { } }
+function save() {
+  var s = JSON.stringify({ role: S.role, token: S.token, user: S.user, cfg: S.cfg });
+  try { localStorage.setItem('kl', s); } catch (e) { try { sessionStorage.setItem('kl', s); } catch (x) { } }
+}
 function signOut(msg) {
   S.token = null; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
+  try { localStorage.removeItem('kl'); } catch (e) { }
   try { sessionStorage.removeItem('kl'); } catch (e) { }
   closeModal(); S.view = 'login'; S.otp = false; login(msg);
 }
@@ -3058,7 +3062,7 @@ H.toLogin = function () { S.view = 'login'; login(); };
 H.signIn = function (d, b) {
   var id = v('li'), pw = v('lp'), keep = v('rm'), role = S.tab, key = role === 'adm' ? 'kl_aid' : 'kl_eid';
   run(b, function () {
-    return P(role === 'adm' ? 'adminLogin' : 'employeeLogin', { identifier: id, password: pw }).then(function (r) {
+    return P(role === 'adm' ? 'adminLogin' : 'employeeLogin', { identifier: id, password: pw, stay: true }).then(function (r) {
       try {
   var pk = role === 'adm' ? 'kl_apw' : 'kl_epw';
   if (keep && String(id).trim()) { localStorage.setItem(key, String(id).trim()); localStorage.setItem(pk, encPw(pw)); }
@@ -5516,7 +5520,7 @@ setTimeout(function () {   // decorative font loads after the page is already vi
   try { var fl = document.createElement('link'); fl.rel = 'stylesheet'; fl.href = 'https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap'; document.head.appendChild(fl); } catch (e) { }
 }, 50);
 (function () {
-  var st = null; try { st = JSON.parse(sessionStorage.getItem('kl') || 'null'); } catch (e) { }
+  var st = null; try { st = JSON.parse(localStorage.getItem('kl') || sessionStorage.getItem('kl') || 'null'); } catch (e) { }
   if (st && st.token && st.role) {
     S.role = st.role; S.token = st.token; S.user = st.user; S.cfg = st.cfg || {}; $('#boot').style.display = 'none'; shell();
     if (S.role === 'adm') A('listEmployees').then(function (l) { S.emps = l; }).catch(function () { });
