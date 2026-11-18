@@ -1611,7 +1611,8 @@ body .login .lbox .btn{min-height:54px;font-size:16px}
   /* ---------- page background: dark top fading to light (Spotify) ---------- */
   html{background:#e3edf8}
   body{
-    background:linear-gradient(180deg,#0b2a43 0,#0f3d5e 90px,#1a6a9e 190px,#e3edf8 400px) no-repeat #e3edf8!important;
+    background:linear-gradient(180deg,#0b2a43 0,#0f3d5e 90px,#1a6a9e 190px,#e3edf8 400px,#e3edf8 100%) no-repeat #0b2a43!important;
+    background-size:100% 100%!important;
   }
   body main h2{color:#fff;font-size:26px;font-weight:800;letter-spacing:-.4px;margin:8px 2px 14px;text-shadow:0 2px 10px rgba(0,0,0,.25)}
   body .pc-top h2{color:#fff}
@@ -2391,6 +2392,10 @@ nav#nav .so{display:none}
 .lite .login::before,.lite .login::after{display:none!important}
 .lite *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .lite .card,.lite .dk,.lite .stat,.lite .pc,.lite .bc,.lite .bz,.lite .lk-c,.lite .ep-g,.lite .mw-r,.lite .qa,.lite .stk tr{box-shadow:none!important}
+.lite .spin{animation:spn .7s linear infinite!important}
+.lite #prog{animation:pg 1s linear infinite!important}
+.lite #ptr.go i{animation:spin2 .7s linear infinite!important}
+html.wv{--sat:0px!important}
 </style>
 </head>
 <body data-company="Kisan Enterprises">
@@ -2428,6 +2433,7 @@ var CO = document.body.getAttribute('data-company') || 'Kisan Enterprises';
   } } };
 })();
 document.documentElement.classList.add('lite');
+if (/; wv\)|WebView/i.test(navigator.userAgent)) document.documentElement.classList.add('wv');
 var LT = { CL: 'Casual Leave', SL: 'Sick Leave', OTHER: 'Other Leave' };
 var S = { role: null, token: null, user: null, cfg: {}, tab: 'emp', view: 'login', emps: [], df: {}, otp: false };
 var H = {}, PG = {}, CHG = {};
