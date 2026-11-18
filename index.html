@@ -2545,8 +2545,9 @@ function bg(kind, action, payload) { try { call(kind, action, payload).catch(fun
 /* ---------- FAST LAYER: instant tabs, instant buttons ---------- */
 var RC = {}, GEN = 0;
 var FAST = {};
-var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1 };
-var RO = { 'adm|attList': 1, 'adm|attFlags': 1, 'adm|attDetail': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryStatementPdf': 1, 'adm|salaryDues': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attMonth': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|getSettings': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1 };
+var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1,  'adm|attFlags': 1 };
+var SOFT = { 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
+var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1 };
 
 function ckey(k, p) {
   var q = {}, cy = new Date().getFullYear();
@@ -2571,7 +2572,9 @@ function call(kind, action, payload) {
       raw(kind, action, payload).then(function (d) {
         e.busy = false;
         if (gen !== GEN) return;
-        RC[key] = { d: d, s: JSON.stringify(d), t: Date.now() };
+        var s2 = JSON.stringify(d), changed = s2 !== e.s;
+        RC[key] = { d: d, s: s2, t: Date.now() };
+        if (changed && SOFT[k] && S.page === pg && !(k === 'emp|attMonth' && pg === 'home')) softRender(pg);
       }).catch(function (er) { e.busy = false; if (er && er.code === 'AUTH') signOut(er.message); });
     }
     return Promise.resolve(e.d);
@@ -2645,7 +2648,7 @@ function fastApp(act, payload, id, status, was) {
 function warm() {
   var list = S.role === 'emp'
     ? [['emp', 'applications'], ['emp', 'holidays']]
-    : [['adm', 'listEmployees'], ['adm', 'listApplications', {}]];
+    : [['adm', 'listEmployees'], ['adm', 'listApplications', {}], ['adm', 'payslipList', {}], ['adm', 'salaryStatement', {}], ['adm', 'attList', { date: '' }]];
   var i = 0, role = S.role;
   (function next() {
     if (S.role !== role || i >= list.length) return;
