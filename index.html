@@ -5533,5 +5533,47 @@ setTimeout(function () {   // decorative font loads after the page is already vi
 })();
 })();
 </script>
+  <script>
+/* Kisan APK update prompt. */
+(function () {
+  var br = window.AndroidBridge;
+  if (!br) return;
+  var myBuild = 0;
+  try { if (br.appBuild) myBuild = Number(br.appBuild()) || 0; } catch (e) { }
+  var KEY = 'kisanUpdateLater', DAY = 24 * 3600 * 1000;
+  try { var t = Number(localStorage.getItem(KEY) || 0); if (t && Date.now() - t < DAY) return; } catch (e) { }
+  fetch('app-version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (v) {
+    if (!v || !(Number(v.build) > myBuild)) return;
+    setTimeout(function () { show(v); }, 3000);
+  }).catch(function () { });
+
+  function show(v) {
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Arial,sans-serif';
+    d.innerHTML = '<div style="background:#fff;border-radius:14px;max-width:340px;width:100%;padding:20px;color:#1f2d3a">' +
+      '<div style="font-size:18px;font-weight:bold;color:#0f3d5e">Update available</div>' +
+      '<div style="margin:10px 0 16px;font-size:14px;line-height:1.4">A new version of the Kisan Employee app is ready. ' + (v.note ? String(v.note).replace(/</g, '&lt;') : 'Please update.') + '</div>' +
+      '<div id="kuMsg" style="font-size:12px;color:#a86a00;margin-bottom:10px;display:none"></div>' +
+      '<button id="kuGo" style="width:100%;padding:12px;border:0;border-radius:8px;background:#0f3d5e;color:#fff;font-size:15px;font-weight:bold">Update now</button>' +
+      '<button id="kuLater" style="width:100%;padding:12px;margin-top:8px;border:0;border-radius:8px;background:#eaf0f6;color:#0f3d5e;font-size:15px">Remind me later</button></div>';
+    document.body.appendChild(d);
+    d.querySelector('#kuLater').onclick = function () { try { localStorage.setItem(KEY, String(Date.now())); } catch (e) { } d.remove(); };
+    d.querySelector('#kuGo').onclick = function () {
+      var b = this, m = d.querySelector('#kuMsg'); b.disabled = true; b.textContent = 'Downloading...';
+      fetch(v.file + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { if (!r.ok) throw 0; return r.blob(); }).then(function (blob) {
+        var fr = new FileReader();
+        fr.onload = function () {
+          var b64 = String(fr.result).split(',')[1];
+          br.saveFile('Kisan-Employee-' + v.build + '.apk', 'application/vnd.android.package-archive', b64);
+          b.textContent = 'Downloaded';
+          m.style.display = 'block';
+          m.textContent = 'Now open the downloaded file (see the notification or the Downloads folder) and tap Install. If Android asks, allow installing from this source.';
+        };
+        fr.readAsDataURL(blob);
+      }).catch(function () { b.disabled = false; b.textContent = 'Update now'; m.style.display = 'block'; m.textContent = 'Download failed. Check your internet and try again.'; });
+    };
+  }
+})();
+</script>
 </body>
 </html>
