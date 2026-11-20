@@ -3427,14 +3427,14 @@ function pnBody() {
 }
 H.atPunch = function (d) {
   var type = d.t === 'OUT' ? 'OUT' : 'IN';
-  PN = { type: type, stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false,
+  PN = { type: type, stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false, locating: false, locTok: 0,
     req: 'P' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10), clock: null };
   modal(type === 'IN' ? 'Punch in' : 'Punch out', pnBody(), '<span></span>');
   var m = $('#modal .md'); if (m) m.classList.add('pn');
   pnFoot('<button class="btn gr" data-a="mclose">Cancel</button><button class="btn pn-main" disabled>Starting camera...</button>');
   var dt = $('#pnDate'); if (dt && AT.data) dt.textContent = AT.data.dateText;
   pnTick(); PN.clock = setInterval(pnTick, 1000);
-  pnStartLoc(); pnStartCam();
+  pnLocShow(); pnStartCam();   // location is NOT read here any more: it is read once, right after the selfie
 };
 function pnTick() {
   var e = $('#pnClock'); if (!e) return;
@@ -3450,23 +3450,47 @@ function pnCleanup() {
 }
 
 /* location */
-function pnStartLoc() {
+/* Location is read ONCE, right after the selfie (not when the screen opens).
+   It listens for a short time and keeps the most accurate reading: it stops as soon as accuracy is 30 m or better,
+   or after 8 seconds with the best reading so far. The confirm button stays disabled until the reading and the
+   server distance check are finished, so nobody can punch before the location is in. */
+function pnReadLoc() {
   if (!PN) return;
-  PN.pos = null; PN.locErr = ''; pnLocShow();
-  if (!navigator.geolocation) { PN.locErr = 'blocked'; pnLocShow(); return; }
+  try { if (PN.watch != null && navigator.geolocation) navigator.geolocation.clearWatch(PN.watch); } catch (e) { }
+  PN.watch = null;
+  PN.pos = null; PN.snap = null; PN.chk = null; PN.locErr = ''; PN.locating = true;
+  var tok = ++PN.locTok, best = null, done = false, soft = false, wid = null, tm = null;
+  pnLocShow(); pnStep('confirm');
+  function finish(err) {
+    if (done) return;
+    done = true;
+    if (tm) clearTimeout(tm);
+    try { if (wid != null && navigator.geolocation) navigator.geolocation.clearWatch(wid); } catch (e) { }
+    if (!PN || PN.locTok !== tok) return;              // cancelled by Retake / close
+    PN.watch = null; PN.locating = false;
+    if (best) { PN.pos = best; PN.locErr = ''; pnLocShow(); pnCheckLoc(); }
+    else { PN.locErr = err || 'unavailable'; pnLocShow(); pnStep('confirm'); }
+  }
+  if (!navigator.geolocation) { finish('blocked'); return; }
   try {
-    PN.watch = navigator.geolocation.watchPosition(function (p) {
-      if (!PN) return;
-      var c = p.coords, cur = PN.pos;
-      if (!cur || c.accuracy <= cur.acc + 5 || (p.timestamp - cur.ts) > 15000) PN.pos = { lat: c.latitude, lng: c.longitude, acc: Math.round(c.accuracy), ts: p.timestamp };
-      PN.locErr = ''; pnLocShow();
-      if (PN.step === 'confirm' && !PN.snap && !PN.busy) pnCheckLoc();
+    wid = navigator.geolocation.watchPosition(function (p) {
+      if (done || !PN || PN.locTok !== tok) return;
+      var c = p.coords;
+      if (!best || c.accuracy < best.acc) best = { lat: c.latitude, lng: c.longitude, acc: Math.round(c.accuracy), ts: p.timestamp };
+      if (c.accuracy <= 30 || soft) finish();
     }, function (e) {
-      if (!PN) return;
-      if (!PN.pos) PN.locErr = e.code === 1 ? 'denied' : e.code === 3 ? 'timeout' : 'unavailable';
-      pnLocShow();
+      if (done || !PN || PN.locTok !== tok) return;
+      if (!best) finish(e.code === 1 ? 'denied' : e.code === 3 ? 'timeout' : 'unavailable');
     }, { enableHighAccuracy: true, maximumAge: 0, timeout: 25000 });
-  } catch (x) { PN.locErr = 'blocked'; pnLocShow(); }
+    PN.watch = wid;
+  } catch (x) { finish('blocked'); return; }
+  tm = setTimeout(function () { soft = true; if (best) finish(); }, 8000);
+}
+function pnLocStop() {
+  if (!PN) return;
+  PN.locTok++; PN.locating = false;
+  try { if (PN.watch != null && navigator.geolocation) navigator.geolocation.clearWatch(PN.watch); } catch (e) { }
+  PN.watch = null; PN.pos = null; PN.locErr = '';
 }
 function pnLocShow() {
   var el = $('#pnLoc'); if (!el || !PN) return;
@@ -3479,13 +3503,13 @@ function pnLocShow() {
       timeout: 'Location is taking too long. Check that GPS is switched on.', unavailable: 'Your device could not find its location.',
       blocked: 'Location is blocked on this page.' }[PN.locErr];
     h = '<span class="at-chip gry">Location not available</span><div class="pn-lw">' + esc(m) + ' You can still punch, but it will be flagged for Admin review.</div><button class="lnk" data-a="pnRetryLoc">Try location again</button>';
-  } else h = '<span class="at-chip gry"><span class="spin"></span> Getting your location...</span>';
+  } else if (!PN.locating && !PN.photo) h = '<span class="at-chip gry">Your location is read when you take the selfie</span>';
+  else h = '<span class="at-chip gry"><span class="spin"></span> Getting your location...</span>';
   el.innerHTML = h;
 }
 H.pnRetryLoc = function () {
-  if (!PN) return;
-  try { if (PN.watch != null) navigator.geolocation.clearWatch(PN.watch); } catch (e) { }
-  pnStartLoc();
+  if (!PN || PN.busy || !PN.photo) return;
+  pnReadLoc();
 };
 
 /* camera: live preview first, phone camera file input as the fallback */
@@ -3559,11 +3583,12 @@ function pnGotPhoto(c) {
   if (PN.stream) { try { PN.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) { } PN.stream = null; }
   var b = $('#pnCam'); if (b) b.innerHTML = '<img class="pn-shot" alt="Your selfie" src="' + url + '">';
   PN.snap = null; PN.chk = null;
-  if (PN.pos) pnCheckLoc(); else pnStep('confirm');
+  pnReadLoc();                                          // the one and only location reading of this punch
 }
 H.pnRetake = function () {
   if (!PN || PN.busy) return;
   PN.photo = null; PN.photoUrl = ''; PN.snap = null; PN.chk = null;
+  pnLocStop(); pnLocShow();                             // forget the old reading; a new selfie reads the location again
   if (PN.mode === 'live') {
     var b = $('#pnCam'); if (b) b.innerHTML = '<div class="ld">Starting camera...</div>';
     pnStartCam();
@@ -3599,8 +3624,11 @@ function pnStep(step) {
     return;
   }
   var c = PN.chk, w, label = 'Confirm ' + verb, ready = true, cls = '';
-  if (!PN.snap) {
-    w = '<div class="msg w"><b>Location not available.</b> You can still ' + verb + ', but it will be saved with the flag <b>"Location unavailable"</b> for Admin review. Or wait a moment for the location to arrive.</div>';
+  if (PN.locating) {
+    ready = false; label = 'Getting location...';
+    w = '<div class="msg i"><span class="spin"></span> Getting your location... please wait and do not close this screen.</div>';
+  } else if (!PN.snap) {
+    w = '<div class="msg w"><b>Location not available.</b> You can still ' + verb + ', but it will be saved with the flag <b>"Location unavailable"</b> for Admin review. Or tap "Try location again" above.</div>';
     label = 'Continue without location &amp; ' + verb;
   } else if (!c) { ready = false; w = '<div class="msg i"><span class="spin"></span> Checking your distance from the office...</div>'; }
   else if (c.error) w = '<div class="msg w">The distance could not be checked now. Your punch will still be saved and the server will record the exact distance.</div>';
