@@ -3427,14 +3427,14 @@ function pnBody() {
 }
 H.atPunch = function (d) {
   var type = d.t === 'OUT' ? 'OUT' : 'IN';
-  PN = { type: type, stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false, locating: false, locTok: 0,
+  PN = { type: type, stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false, locating: false, locTok: 0, best: null, locStart: 0, locTm: null, locDeadline: 0,
     req: 'P' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10), clock: null };
   modal(type === 'IN' ? 'Punch in' : 'Punch out', pnBody(), '<span></span>');
   var m = $('#modal .md'); if (m) m.classList.add('pn');
   pnFoot('<button class="btn gr" data-a="mclose">Cancel</button><button class="btn pn-main" disabled>Starting camera...</button>');
   var dt = $('#pnDate'); if (dt && AT.data) dt.textContent = AT.data.dateText;
   pnTick(); PN.clock = setInterval(pnTick, 1000);
-  pnLocShow(); pnStartCam();   // location is NOT read here any more: it is read once, right after the selfie
+  pnLocShow(); pnWatchStart(); pnStartCam();   // GPS warms up while the camera starts
 };
 function pnTick() {
   var e = $('#pnClock'); if (!e) return;
@@ -3450,47 +3450,57 @@ function pnCleanup() {
 }
 
 /* location */
-/* Location is read ONCE, right after the selfie (not when the screen opens).
-   It listens for a short time and keeps the most accurate reading: it stops as soon as accuracy is 30 m or better,
-   or after 8 seconds with the best reading so far. The confirm button stays disabled until the reading and the
-   server distance check are finished, so nobody can punch before the location is in. */
-function pnReadLoc() {
+var LOC_GOOD = 50;        // metres: this accurate or better = use it immediately
+var LOC_WAIT = 2000;      // ms after the selfie: use the best reading we have by then
+var LOC_GIVEUP = 12000;   // ms with no reading at all: show "location not available"
+
+function pnWatchStart() {
   if (!PN) return;
   try { if (PN.watch != null && navigator.geolocation) navigator.geolocation.clearWatch(PN.watch); } catch (e) { }
-  PN.watch = null;
-  PN.pos = null; PN.snap = null; PN.chk = null; PN.locErr = ''; PN.locating = true;
-  var tok = ++PN.locTok, best = null, done = false, soft = false, wid = null, tm = null;
-  pnLocShow(); pnStep('confirm');
-  function finish(err) {
-    if (done) return;
-    done = true;
-    if (tm) clearTimeout(tm);
-    try { if (wid != null && navigator.geolocation) navigator.geolocation.clearWatch(wid); } catch (e) { }
-    if (!PN || PN.locTok !== tok) return;              // cancelled by Retake / close
-    PN.watch = null; PN.locating = false;
-    if (best) { PN.pos = best; PN.locErr = ''; pnLocShow(); pnCheckLoc(); }
-    else { PN.locErr = err || 'unavailable'; pnLocShow(); pnStep('confirm'); }
-  }
-  if (!navigator.geolocation) { finish('blocked'); return; }
+  PN.watch = null; PN.best = null; PN.locErr = ''; PN.locStart = Date.now();
+  if (!navigator.geolocation) { PN.locErr = 'blocked'; return; }
+  var tok = PN.locTok;
   try {
-    wid = navigator.geolocation.watchPosition(function (p) {
-      if (done || !PN || PN.locTok !== tok) return;
+    PN.watch = navigator.geolocation.watchPosition(function (p) {
+      if (!PN || PN.locTok !== tok) return;
       var c = p.coords;
-      if (!best || c.accuracy < best.acc) best = { lat: c.latitude, lng: c.longitude, acc: Math.round(c.accuracy), ts: p.timestamp };
-      if (c.accuracy <= 30 || soft) finish();
+      if (!PN.best || c.accuracy < PN.best.acc) PN.best = { lat: c.latitude, lng: c.longitude, acc: Math.round(c.accuracy), ts: p.timestamp };
+      PN.locErr = '';
+      if (PN.locating) pnLocTry();
     }, function (e) {
-      if (done || !PN || PN.locTok !== tok) return;
-      if (!best) finish(e.code === 1 ? 'denied' : e.code === 3 ? 'timeout' : 'unavailable');
-    }, { enableHighAccuracy: true, maximumAge: 0, timeout: 25000 });
-    PN.watch = wid;
-  } catch (x) { finish('blocked'); return; }
-  tm = setTimeout(function () { soft = true; if (best) finish(); }, 8000);
+      if (!PN || PN.locTok !== tok) return;
+      if (!PN.best) { PN.locErr = e.code === 1 ? 'denied' : e.code === 3 ? 'timeout' : 'unavailable'; if (PN.locating) pnLocTry(); }
+    }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 });
+  } catch (x) { PN.locErr = 'blocked'; }
+}
+function pnReadLoc() {
+  if (!PN) return;
+  PN.pos = null; PN.snap = null; PN.chk = null; PN.locating = true;
+  PN.locDeadline = Date.now() + LOC_WAIT;
+  if (PN.watch == null && !PN.locErr) pnWatchStart();
+  pnLocShow(); pnStep('confirm');
+  pnLocTry();
+}
+function pnLocTry() {
+  if (!PN || !PN.locating) return;
+  clearTimeout(PN.locTm);
+  var b = PN.best, now = Date.now();
+  if (b && (b.acc <= LOC_GOOD || now >= PN.locDeadline)) { pnLocDone(); return; }
+  if (!b && PN.locErr) { pnLocDone(); return; }
+  if (!b && now - PN.locStart > LOC_GIVEUP) { PN.locErr = 'timeout'; pnLocDone(); return; }
+  PN.locTm = setTimeout(pnLocTry, 200);
+}
+function pnLocDone() {
+  if (!PN) return;
+  clearTimeout(PN.locTm);
+  PN.locating = false;
+  if (PN.best) { PN.pos = PN.best; PN.locErr = ''; pnLocShow(); pnCheckLoc(); }
+  else { pnLocShow(); pnStep('confirm'); }
 }
 function pnLocStop() {
   if (!PN) return;
-  PN.locTok++; PN.locating = false;
-  try { if (PN.watch != null && navigator.geolocation) navigator.geolocation.clearWatch(PN.watch); } catch (e) { }
-  PN.watch = null; PN.pos = null; PN.locErr = '';
+  clearTimeout(PN.locTm);
+  PN.locating = false; PN.pos = null; PN.snap = null; PN.chk = null;
 }
 function pnLocShow() {
   var el = $('#pnLoc'); if (!el || !PN) return;
@@ -3510,7 +3520,7 @@ function pnLocShow() {
 }
 H.pnRetryLoc = function () {
   if (!PN || PN.busy || !PN.photo) return;
-  pnReadLoc();
+  pnWatchStart(); pnReadLoc();
 };
 
 /* camera: live preview first, phone camera file input as the fallback */
@@ -3631,7 +3641,7 @@ function pnStep(step) {
   } else if (!PN.snap) {
     w = '<div class="msg w"><b>Location not available.</b> You can still ' + verb + ', but it will be saved with the flag <b>"Location unavailable"</b> for Admin review. Or tap "Try location again" above.</div>';
     label = 'Continue without location &amp; ' + verb;
-  } else if (!c) { ready = false; label = 'Please wait...'; w = '<div class="msg i"><span class="spin"></span> Checking your location... please wait.</div>'; }
+  } else if (!c) { w = '<div class="msg i"><span class="spin"></span> Checking distance from the office...</div>'; }
   else if (c.error) w = '<div class="msg w">The distance could not be checked now. Your punch will still be saved and the server will record the exact distance.</div>';
   else if (!c.officeSet) w = '<div class="msg i">Admin has not set the office location yet. Your punch will be saved with the flag "Office location not set".</div>';
   else if (!c.inside) {
@@ -3644,7 +3654,8 @@ function pnStep(step) {
 H.pnSend = function (d, b) {
   if (!PN || !PN.photo || PN.busy) return;
   var p = { type: PN.type, photo: { data: PN.photo }, requestId: PN.req };
-  if (PN.snap) { p.lat = PN.snap.lat; p.lng = PN.snap.lng; p.accuracy = PN.snap.acc; } else p.noLocation = true;
+  var L = PN.snap && PN.best && PN.best.acc < PN.snap.acc ? PN.best : PN.snap;
+  if (L) { p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc; } else p.noLocation = true;
   PN.busy = true;
   run(b, function () {
     return E('attPunch', p).then(function (r) { toast(r.message); closeModal(); attLoad(true); });
