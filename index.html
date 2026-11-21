@@ -3637,19 +3637,21 @@ function pnStep(step) {
   var c = PN.chk, w, label = 'Confirm ' + verb, ready = true, cls = '';
   if (PN.locating) {
     ready = false; label = 'Please wait...';
-    w = '<div class="msg i"><span class="spin"></span> Checking your location... please wait.</div>';
+    w = '<div class="msg i"><span class="spin"></span> Fetching your location... please wait.</div>';
   } else if (!PN.snap) {
-    w = '<div class="msg w"><b>Location not available.</b> You can still ' + verb + ', but it will be saved with the flag <b>"Location unavailable"</b> for Admin review. Or tap "Try location again" above.</div>';
-    label = 'Continue without location &amp; ' + verb;
-  } else if (!c) { w = '<div class="msg i"><span class="spin"></span> Checking distance from the office...</div>'; }
-  else if (c.error) w = '<div class="msg w">The distance could not be checked now. Your punch will still be saved and the server will record the exact distance.</div>';
+    ready = false;
+    w = '<div class="msg e"><b>Location not fetched.</b> You cannot ' + verb + ' without your location. Turn on GPS and allow location, then tap "Try location again".</div>';
+  } else if (!c) { ready = false; w = '<div class="msg i"><span class="spin"></span> Checking distance from the office...</div>'; }
+  else if (c.error) { ready = false; w = '<div class="msg e">The distance could not be checked. Please tap "Try location again".</div>'; }
   else if (!c.officeSet) w = '<div class="msg i">Admin has not set the office location yet. Your punch will be saved with the flag "Office location not set".</div>';
   else if (!c.inside) {
     w = '<div class="msg e"><b>You are outside the office premises.</b> You are about ' + c.distance + ' m away (allowed: ' + c.radius + ' m). You can still ' + verb + ', but it will be saved with the flag <b>"Outside premises"</b> for Admin review.</div>';
     label = 'Confirm ' + verb + ' anyway'; cls = ' bad';
   } else w = '<div class="msg o">You are inside the office premises (' + c.distance + ' m from the office).</div>';
   if (warnEl) warnEl.innerHTML = w;
-  pnFoot(cancel + '<button class="btn gr" data-a="pnRetake">Retake</button><button class="btn pn-main' + cls + '" id="pnBtn" data-a="pnSend"' + (ready ? '' : ' disabled') + '>' + label + '</button>');
+  var okBtn = ready ? '<button class="btn pn-main' + (c && c.inside ? ' ok' : cls) + '" id="pnBtn" data-a="pnSend">' + label + '</button>' : '';   
+  var retryBtn = (!PN.locating && (!PN.snap || (c && c.error))) ? '<button class="btn pn-main" data-a="pnRetryLoc">Try location again</button>' : '';   
+  pnFoot(cancel + (PN.locating ? '' : '<button class="btn gr" data-a="pnRetake">Retake</button>') + retryBtn + okBtn);
 }
 H.pnSend = function (d, b) {
   if (!PN || !PN.photo || PN.busy) return;
