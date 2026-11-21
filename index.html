@@ -5562,21 +5562,22 @@ H.pwSave = function (d, b) { run(b, function () { return A('changePassword', { c
 /* ======================= ADVANCES ======================= */
 function advForm(list, kind) {
   S.advKind = kind;
-  var t = new Date(), today = t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2) + '-' + ('0' + t.getDate()).slice(-2);
-  modal('Give advance',
-    '<div class="msg i">Ye amount employee ki payslip se har mahine instalment me katega.</div>' +
+  var t = new Date(), mm = ('0' + (t.getMonth() + 1)).slice(-2);
+  var today = t.getFullYear() + '-' + mm + '-' + ('0' + t.getDate()).slice(-2);
+  modal('Record advance',
     fld('Employee', '<select id="avE">' + opts(list, '', 'Select employee') + '</select>') +
-    '<div class="row"><div>' + fld('Advance amount (Rs)', '<input type="number" min="1" id="avA">') + '</div><div>' + fld('Monthly instalment (Rs)', '<input type="number" min="1" id="avI">') + '</div></div>' +
-    '<div class="row"><div>' + fld('Date given', '<input type="date" id="avD" value="' + today + '" max="' + today + '">') + '</div><div>' + fld('Katna shuru (month)', '<input type="month" id="avM">', 'Khali = agle mahine se') + '</div></div>' +
-    fld('Note', '<input type="text" id="avN" maxlength="300">'),
-    '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn ok" data-a="advSave">Save advance</button>');
+    fld('Advance amount (Rs)', '<input type="number" min="1" id="avA">') +
+    fld('Date taken', '<input type="date" id="avD" value="' + today + '" max="' + today + '">') +
+    fld('Deduct from which month salary', '<input type="month" id="avM" value="' + t.getFullYear() + '-' + mm + '">') +
+    fld('Note (optional)', '<input type="text" id="avN" maxlength="300">'),
+    '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn ok" data-a="advSave">Save</button>');
 }
 H.advSave = function (d, b) {
-  var emp = v('avE'), amt = parseFloat(v('avA')), inst = parseFloat(v('avI'));
+  var emp = v('avE'), amt = parseFloat(v('avA')), mon = v('avM');
   if (!emp) { toast('Employee select karo.', true); return; }
   if (!(amt > 0)) { toast('Advance amount daalo.', true); return; }
-  if (!(inst > 0) || inst > amt) { toast('Instalment sahi daalo (advance se zyada nahi).', true); return; }
-  var p = { empId: emp, amount: amt, instalment: inst, date: v('avD'), startMonth: v('avM'), note: v('avN') };
+  if (!mon) { toast('Salary month chuno.', true); return; }
+  var p = { empId: emp, amount: amt, instalment: amt, date: v('avD'), startMonth: mon, note: v('avN') };
   run(b, function () {
     return (S.advKind === 'emp' ? E('payAccAdvance', p) : A('advSave', p)).then(function (r) { closeModal(); toast(r.message); reload(); });
   }, 'Saving...');
