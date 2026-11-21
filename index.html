@@ -2547,7 +2547,7 @@ var RC = {}, GEN = 0;
 var FAST = {};
 var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1,  'adm|attFlags': 1 };
 var SOFT = { 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
-var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1 };
+var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1 };
 
 function ckey(k, p) {
   var q = {}, cy = new Date().getFullYear();
@@ -3121,7 +3121,7 @@ function navApply(force) {
   });
 }
 H.navgrp = function (d) { S.navOpen = S.navOpen || {}; S.navOpen[d.g] = !S.navOpen[d.g]; navApply(false); };
-var AN = [['dash', 'Dashboard', '&#9632;'], ['aatt', 'Attendance', '&#10003;'], ['leave', 'Leave', '&#9998;', [['aapps', 'Applications'], ['manual', 'Manual Leave Entry'], ['una', 'Unauthorized Leave'], ['bal', 'Balances & Ledger']]], ['emps', 'Employees', '&#9787;'], ['payg', 'Payments', '&#8377;', [['pay', 'Payslips'], ['sstmt', 'Salary statement']]],
+var AN = [['dash', 'Dashboard', '&#9632;'], ['aatt', 'Attendance', '&#10003;'], ['leave', 'Leave', '&#9998;', [['aapps', 'Applications'], ['manual', 'Manual Leave Entry'], ['una', 'Unauthorized Leave'], ['bal', 'Balances & Ledger']]], ['emps', 'Employees', '&#9787;'], ['payg', 'Payments', '&#8377;', [['pay', 'Payslips'], ['sstmt', 'Salary statement'], ['adv', 'Advances']]],
   ['bonus', 'Diwali Bonus', '&#9733;'], ['ahol', 'Public Holidays', '&#9728;'], ['|'], ['set', 'Settings', '&#9881;'], ['admins', 'Administrators', '&#9823;'], ['log', 'System Log', '&#9783;'], ['pwd', 'Change Password', '&#9919;']];
 var BI = {
   pay: '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5"/><path d="M9 16h2.5a2 2 0 0 0 0-4"/></svg>',
@@ -5146,7 +5146,7 @@ PG.salpay = function () {
         '<div class="pc-net"><small>Net pay</small><b>' + (x.net == null ? '-' : '&#8377;' + inr(x.net)) + '</b></div></div>' +
         '<div class="pc-m" style="margin-top:10px">' + st + '<span style="margin-left:auto">' + btn + '</span></div></div>';
     }).join('');
-    main(nav + '<div class="msg i">Pay the employee from the bank, then tap <b>Mark as Paid</b>. Only finished months are shown. A slip is ready only when no day is waiting for Admin approval.</div>' + top +
+    main(nav + '<p><button class="btn" data-a="go" data-p="spadv">Advances</button></p><div class="msg i">Pay the employee from the bank, then tap <b>Mark as Paid</b>. Only finished months are shown. A slip is ready only when no day is waiting for Admin approval.</div>' + top +
       (ready.length ? '<p><button class="btn ok" data-a="spAll">Mark all ready as Paid (' + ready.length + ')</button></p>' : '') +
       '<div class="pc-list">' + (cards || '<div class="ld">No employees found.</div>') + '</div>');
   });
@@ -5559,7 +5559,74 @@ PG.pwd = function () {
 H.pwSave = function (d, b) { run(b, function () { return A('changePassword', { currentPassword: v('pc'), newPassword: v('pn'), confirmPassword: v('pf') }).then(function (r) { signOut(r.message); }); }); };
 
 
+/* ======================= ADVANCES ======================= */
+function advForm(list, kind) {
+  S.advKind = kind;
+  var t = new Date(), today = t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2) + '-' + ('0' + t.getDate()).slice(-2);
+  modal('Give advance',
+    '<div class="msg i">Ye amount employee ki payslip se har mahine instalment me katega.</div>' +
+    fld('Employee', '<select id="avE">' + opts(list, '', 'Select employee') + '</select>') +
+    '<div class="row"><div>' + fld('Advance amount (Rs)', '<input type="number" min="1" id="avA">') + '</div><div>' + fld('Monthly instalment (Rs)', '<input type="number" min="1" id="avI">') + '</div></div>' +
+    '<div class="row"><div>' + fld('Date given', '<input type="date" id="avD" value="' + today + '" max="' + today + '">') + '</div><div>' + fld('Katna shuru (month)', '<input type="month" id="avM">', 'Khali = agle mahine se') + '</div></div>' +
+    fld('Note', '<input type="text" id="avN" maxlength="300">'),
+    '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn ok" data-a="advSave">Save advance</button>');
+}
+H.advSave = function (d, b) {
+  var emp = v('avE'), amt = parseFloat(v('avA')), inst = parseFloat(v('avI'));
+  if (!emp) { toast('Employee select karo.', true); return; }
+  if (!(amt > 0)) { toast('Advance amount daalo.', true); return; }
+  if (!(inst > 0) || inst > amt) { toast('Instalment sahi daalo (advance se zyada nahi).', true); return; }
+  var p = { empId: emp, amount: amt, instalment: inst, date: v('avD'), startMonth: v('avM'), note: v('avN') };
+  run(b, function () {
+    return (S.advKind === 'emp' ? E('payAccAdvance', p) : A('advSave', p)).then(function (r) { closeModal(); toast(r.message); reload(); });
+  }, 'Saving...');
+};
 
+/* ---- Owner page ---- */
+PG.adv = function () {
+  return A('advList', {}).then(function (d) {
+    var rows = d.rows.map(function (a) {
+      return '<tr><td>' + esc(a.name) + '<div class="hint">' + esc(a.empId) + ' &middot; ' + esc(a.id) + '</div></td><td>' + esc(a.date) +
+        '</td><td class="num">' + inrF(a.amount) + '</td><td class="num">' + inrF(a.inst) + '</td><td>' + esc(a.startLabel) +
+        '</td><td class="num">' + inrF(a.balance) + '</td><td>' + badge(a.status) + '</td><td>' +
+        (a.status === 'Active' ? '<button class="btn sm bad" data-a="advCancel" data-id="' + esc(a.id) + '">Cancel</button>' : '') + '</td></tr>';
+    });
+    main('<h2>Advances</h2><p><button class="btn" data-a="advNew">+ Give advance</button></p>' +
+      '<div class="bl-top" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><span>Advances</span><b>' + d.rows.length + '</b></div><div><span>Total balance</span><b>&#8377;' + inrF(d.totalBalance) + '</b></div></div>' +
+      '<div class="card">' + tbl(['Employee', 'Given', 'Advance', 'Instalment', 'Starts', 'Balance', 'Status', ''], rows, 'No advances recorded yet.', true) + '</div>');
+  });
+};
+H.advNew = function () {
+  advForm(S.emps.filter(function (e) { return e.status === 'Active'; }).map(function (e) { return [e.id, e.name + ' (' + e.id + ')']; }), 'adm');
+};
+H.advCancel = function (d) {
+  S.advId = d.id;
+  modal('Cancel advance ' + d.id, fld('Reason (mandatory)', '<input type="text" id="avR" maxlength="300">') +
+    '<div class="hint">Kuch recover nahi hua to cancel hoga. Kuch kat chuka hai to baaki amount write-off hoga.</div>',
+    '<button class="btn gr" data-a="mclose">Close</button><button class="btn bad" data-a="advCancelDo">Cancel advance</button>', true);
+};
+H.advCancelDo = function (d, b) {
+  var why = v('avR').trim();
+  if (why.length < 3) { toast('Reason daalo.', true); return; }
+  run(b, function () { return A('advCancel', { id: S.advId, reason: why }).then(function (r) { closeModal(); toast(r.message); reload(); }); });
+};
+
+/* ---- Accountant page ---- */
+PG.spadv = function () {
+  return E('payAccAdvList', {}).then(function (d) {
+    S.spAdvEmps = d.emps;
+    var rows = d.rows.map(function (a) {
+      return '<tr><td>' + esc(a.name) + '<div class="hint">' + esc(a.empId) + ' &middot; ' + esc(a.id) + '</div></td><td>' + esc(a.date) +
+        '</td><td class="num">' + inrF(a.amount) + '</td><td class="num">' + inrF(a.inst) + '</td><td>' + esc(a.startLabel) +
+        '</td><td class="num">' + inrF(a.balance) + '</td></tr>';
+    });
+    main('<h2>Advances</h2><p><button class="btn" data-a="spAdv2">+ Give advance</button> <button class="btn gr" data-a="go" data-p="salpay">&lsaquo; Salary Payments</button></p>' +
+      '<div class="card">' + tbl(['Employee', 'Given', 'Advance', 'Instalment', 'Starts', 'Balance'], rows, 'No active advances.', true) + '</div>');
+  });
+};
+H.spAdv2 = function () {
+  advForm((S.spAdvEmps || []).map(function (e) { return [e.id, e.name + ' (' + e.id + ')']; }), 'emp');
+};
 /* ---------- boot ---------- */
 setTimeout(function () {   // decorative font loads after the page is already visible
   try { var fl = document.createElement('link'); fl.rel = 'stylesheet'; fl.href = 'https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap'; document.head.appendChild(fl); } catch (e) { }
