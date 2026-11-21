@@ -3516,7 +3516,7 @@ function pnLocShow() {
     var m = { denied: 'Location permission was denied or blocked. Allow location for this site in your phone or browser settings.',
       timeout: 'Location is taking too long. Check that GPS is switched on.', unavailable: 'Your device could not find its location.',
       blocked: 'Location is blocked on this page.' }[PN.locErr];
-    h = '<span class="at-chip gry">Location not available</span><div class="pn-lw">' + esc(m) + ' You can still punch, but it will be flagged for Admin review.</div><button class="lnk" data-a="pnRetryLoc">Try location again</button>';
+    h = '<span class="at-chip gry">Location not available</span><div class="pn-lw">' + esc(m) + ' You cannot punch until your location is fetched.</div><button class="lnk" data-a="pnRetryLoc">Try location again</button>';<button class="lnk" data-a="pnRetryLoc">Try location again</button>';
   } else if (!PN.photo) h = '<span class="at-chip gry">Your location is read once, when you take the selfie</span>';
   el.innerHTML = h;
 }
@@ -3659,7 +3659,8 @@ H.pnSend = function (d, b) {
   if (!PN || !PN.photo || PN.busy) return;
   var p = { type: PN.type, photo: { data: PN.photo }, requestId: PN.req };
   var L = PN.snap && PN.best && PN.best.acc < PN.snap.acc ? PN.best : PN.snap;
-  if (L) { p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc; } else p.noLocation = true;
+  if (!L) { toast('Location is required to punch.', true); return; } 
+  p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc;
   PN.busy = true;
   run(b, function () {
     return E('attPunch', p).then(function (r) { toast(r.message); closeModal(); attLoad(true); });
