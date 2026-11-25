@@ -2865,7 +2865,8 @@ function fieldFabSync(p) {
   var b = $('#fldFab'); if (!b) return;
   b.classList.toggle('hide', !(S.role === 'emp' && S.fieldOn && p !== 'field'));
 }
-var FLD = { list: [], dateText: '' };
+var FLD = { list: [], dateText: '', actor: '', staff: [], selfId: '', name: '' };
+function fa() { return FLD.actor ? { actAs: FLD.actor } : {}; }
 function fldRowsHtml() {
   if (!FLD.list.length) return '<div class="ld">No visit selfie taken today.</div>';
   return FLD.list.map(function (x) {
@@ -2883,12 +2884,12 @@ function fldDraw() {
   var state = closed ? 'Trip finished' : !open ? 'Ready when you are' : pend ? pend + ' visit form(s) pending' : saved ? 'On the road' : 'Take a selfie at the visit site';
   var big = open
     ? '<button class="pbtn done" disabled><span class="pr"></span><span class="pr p2"></span><b>&#9654;</b><small>TRIP ON</small></button>'
-    : '<button class="pbtn in" data-a="odoOpen" data-t="START"><span class="pr"></span><span class="pr p2"></span><b>&#9758;</b><small>' + (closed ? 'NEW TRIP' : 'START VISIT') + '</small></button>';
+    : '<button class="pbtn in" data-a="fldWho" data-go="1"><span class="pr"></span><span class="pr p2"></span><b>&#9758;</b><small>' + (closed ? 'NEW TRIP' : 'START VISIT') + '</small></button>';
 
   var s1 = fldStepHtml(1, 'Odometer (start)',
     T.start ? 'Submitted ' + esc(T.start.time) + ' &middot; ' + esc(T.start.km) + ' km' : 'Photo of the odometer before you leave the office.',
     T.start ? 'done' : 'now',
-    T.start ? '<button class="ep-b" data-a="odoView" data-id="' + esc(T.start.id) + '">View</button>' : '<button class="btn sm ok" data-a="odoOpen" data-t="START">Enter reading</button>');
+    T.start ? '<button class="ep-b" data-a="odoView" data-id="' + esc(T.start.id) + '">View</button>' : '<button class="btn sm ok" data-a="fldWho" data-go="1">Enter reading</button>');
   var s2 = fldStepHtml(2, 'Selfie &amp; visit form',
     !T.start ? 'Opens after the odometer (start) is submitted.' : saved + ' visit form(s) saved' + (pend ? ', ' + pend + ' pending' : '') + (open ? '. Take a selfie at each visit site.' : '.'),
     !T.start ? 'lock' : (saved > 0 ? 'done' : 'now'),
@@ -2906,6 +2907,8 @@ function fldDraw() {
     '<span class="pk-live"><i></i>LIVE</span></div>' +
     '<div class="pk-mid"><div class="pk-c"><div class="pk-work"><small>Visit forms saved</small><b>' + saved + '</b></div>' +
     '<span class="pk-state">' + state + '</span></div>' + big + '</div></div>' +
+    '<div class="pn-sw" style="margin:12px 14px 0"><div><b>Trip by: ' + esc(FLD.name) + '</b><small>Odometer, selfies and visit forms are saved for this employee.</small></div>' +
+    '<button class="btn sm ghost" data-a="fldWho">Change</button></div>' +
     '<div class="fs-steps">' + s1 + s2 + s3 + '</div>' +
     (canEnd && pend ? '<div class="pk-notes"><div class="msg w" style="margin:0">' + pend + ' selfie(s) still need a visit form. Open them below.</div></div>' : '') +
     '<div class="pk-notes"><div class="hint">Photo, time and location are recorded and can be seen by Admin.</div></div></div>' +
@@ -2915,13 +2918,14 @@ function fldDraw() {
 function fldApply(d) {
   AT.off = d.serverNow - Date.now();
   FLD.list = d.list || []; FLD.dateText = d.dateText || ''; FLD.visits = d.visits || []; FLD.trip = d.trip || { state: 'none' };
+  FLD.staff = d.staff || []; FLD.selfId = d.selfId || ''; FLD.name = d.name || '';
 }
 PG.field = function () {
-  return E('fldToday').then(function (d) { fldApply(d); fldDraw(); });
+  return E('fldToday', fa()).then(function (d) { fldApply(d); fldDraw(); });
 };
 function fldReload() {
   if (S.page !== 'field') return;
-  E('fldToday').then(function (d) { if (S.page === 'field') { fldApply(d); fldDraw(); } })
+  E('fldToday', fa()).then(function (d) { if (S.page === 'field') { fldApply(d); fldDraw(); } })
     .catch(function (e) { if (e && e.code === 'AUTH') signOut(e.message); });
 }
 
@@ -2979,6 +2983,7 @@ H.odoSave = function (d, b) {
   if (!isFinite(km) || km < 0) { toast('Please enter the odometer reading.', true); return; }
   if (!OD.photo) { toast('Please take the odometer photo.', true); return; }
   var p = { type: OD.type, km: km, photo: { data: OD.photo.split(',')[1] }, requestId: OD.req };
+  Object.assign(p, fa());
   OD.busy = true;
   run(b, function () {
     return odoLocate().then(function (L) {
@@ -3004,7 +3009,7 @@ function fldThumb(id) {
   var key = 'F' + id;
   function put(u) { var e = document.getElementById('fldph'); if (e && e.getAttribute('data-id') === id) e.innerHTML = u ? '<img alt="Selfie" src="' + u + '">' : '&ndash;'; }
   if (AT.ph[key]) { put(AT.ph[key]); return; }
-  E('fldPhoto', { id: id }).then(function (r) { AT.ph[key] = 'data:' + r.mime + ';base64,' + r.data; put(AT.ph[key]); })
+  E('fldPhoto', Object.assign({ id: id }, fa())).then(function (r) { AT.ph[key] = 'data:' + r.mime + ';base64,' + r.data; put(AT.ph[key]); })
     .catch(function (e) { if (e && e.code === 'AUTH') { signOut(e.message); return; } put(''); });
 }
 function fldDetail(id) {
@@ -3018,6 +3023,26 @@ function fldDetail(id) {
   fldThumb(id);
 }
 H.fldOpen = function (d) { fldDetail(d.id); };
+H.fldWho = function (d) {
+  var go = d && d.go === '1', cur = FLD.actor || FLD.selfId;
+  var rows = (FLD.staff || []).map(function (s) {
+    return '<button class="btn ' + (s.id === cur ? 'ok' : 'ghost') + '" style="width:100%;margin-bottom:8px" data-a="fldPick" data-id="' + esc(s.id) + '" data-go="' + (go ? '1' : '') + '">' +
+      esc(s.name) + (s.id === FLD.selfId ? ' (logged in)' : '') + '</button>';
+  }).join('');
+  modal(go ? 'Who is doing this trip?' : 'Change employee',
+    '<div class="msg i">Select the employee going on this trip. His odometer readings, selfies and visit forms are saved under his name.</div>' + (rows || '<div class="ld">No Field Staff found.</div>'),
+    '<button class="btn gr" data-a="mclose">Cancel</button>');
+};
+H.fldPick = function (d) {
+  var go = d.go === '1';
+  FLD.actor = d.id === FLD.selfId ? '' : d.id;
+  closeModal();
+  E('fldToday', fa()).then(function (r) {
+    fldApply(r);
+    if (S.page === 'field') fldDraw();
+    if (go) H.odoOpen({ t: 'START' });
+  }).catch(function (e) { if (e.code === 'AUTH') signOut(e.message); else toast(e.message, true); });
+};
 H.fldSelfie = function () {
   if (!FLD.trip || FLD.trip.state !== 'open') { toast('Submit the odometer (start) reading first.', true); return; }
   PN = { type: 'FIELD', stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false, locating: false, locTok: 0, best: null, locStart: 0, locTm: null, locDeadline: 0,
@@ -3048,6 +3073,7 @@ H.fldSend = function (d, b) {
   var L = PN.pos && PN.best && PN.best.acc < PN.pos.acc ? PN.best : PN.pos;
   if (!L) { toast('Location not available, try again.', true); return; }
   var p = { photo: { data: PN.photo }, requestId: PN.req, lat: L.lat, lng: L.lng, accuracy: L.acc };
+  Object.assign(p, fa());
   PN.busy = true;
   run(b, function () {
     return E('fldSelfie', p).then(function (r) {
@@ -3077,7 +3103,7 @@ function fvPhoto(k, label) {
 }
 H.fldForm = function (d) {
   modalLoading('Visit form');
-  E('fldFormInfo').then(function (i) {
+  E('fldFormInfo', fa()).then(function (i) {
     FV = { selfieId: d.id, info: i, card: '', req: '', reqKey: 'V' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10) };
     var o = i.options;
     var staff = i.staff.map(function (s) {
@@ -3139,6 +3165,7 @@ CHG.fvPhoto = function (el) {
 H.fvSave = function (d, b) {
   if (!FV || FV.busy) return;
   var p = { selfieId: FV.selfieId, requestId: FV.reqKey, staff: $$('.fvst:checked').map(function (c) { return c.value; }) };
+  Object.assign(p, fa());
   ['customer', 'contact', 'designation', 'phone', 'address', 'email', 'ctype', 'purpose', 'product', 'discussion', 'interest', 'timeline', 'orderSize', 'nextAction', 'amount']
     .forEach(function (k) { p[k] = fvGet(k); });
   if (FV.card) p.cardPhoto = { data: FV.card.split(',')[1] };
@@ -3319,7 +3346,7 @@ function save() {
   try { localStorage.setItem('kl', s); } catch (e) { try { sessionStorage.setItem('kl', s); } catch (x) { } }
 }
 function signOut(msg) {
-  S.token = null; S.fieldOn = false; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
+  S.token = null; S.fieldOn = false; FLD.actor = ''; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
   try { localStorage.removeItem('kl'); } catch (e) { }
   try { sessionStorage.removeItem('kl'); } catch (e) { }
   closeModal(); S.view = 'login'; S.otp = false; login(msg);
