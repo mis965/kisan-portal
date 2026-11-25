@@ -363,7 +363,7 @@ tr.flr td:first-child{box-shadow:inset 4px 0 0 #c0392b}
 .pn-cam .ld{color:#cfe0ef}
 .pn-fb{text-align:center;color:#fff;padding:16px}.pn-fb .hint{color:#cfe0ef}.pn-fi{font-size:40px}
 .pn-con{font-size:12px;color:var(--mut);background:var(--bg);border-radius:8px;padding:9px 12px;margin-top:4px}
-.pn-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+.pn-file{position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
 .pn-lb{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-align:center}
 .md.pn .mf{flex-wrap:wrap}.md.pn .mf .btn{min-height:48px}.md.pn .pn-main{flex:1 1 100%;order:-1}
 @media(max-width:760px){.md.pn{display:flex;flex-direction:column;height:100vh;height:100dvh}.md.pn .mb{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}.md.pn .mf{padding-bottom:calc(12px + env(safe-area-inset-bottom))}.md.pn .mf .btn{flex:1}}
@@ -2389,6 +2389,8 @@ nav#nav .so{display:none}
   }
 }
 .lite *,.lite *::before,.lite *::after{animation:none!important;transition:none!important}
+body .rt-tr{animation:rtmove var(--rtd,20s) linear infinite!important}
+body .rt-tr:hover{animation-play-state:paused!important}
 .lite .login::before,.lite .login::after{display:none!important}
 .lite *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .lite .card,.lite .dk,.lite .stat,.lite .pc,.lite .bc,.lite .bz,.lite .lk-c,.lite .ep-g,.lite .mw-r,.lite .qa,.lite .stk tr{box-shadow:none!important}
@@ -2396,6 +2398,13 @@ nav#nav .so{display:none}
 .lite #prog{animation:pg 1s linear infinite!important}
 .lite #ptr.go i{animation:spin2 .7s linear infinite!important}
 html.wv{--sat:0px!important}
+/* ===== FIELD STAFF floating button ===== */
+#fldFab{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:24;display:flex;align-items:center;gap:8px;height:50px;padding:0 20px;border:0;border-radius:25px;background:linear-gradient(145deg,#ffd166,#e0a100);color:#2d1f00;font-size:14px;font-weight:800;letter-spacing:.3px;box-shadow:0 8px 22px rgba(224,161,0,.5);cursor:pointer}
+#fldFab.hide{display:none}
+#fldFab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#fldFab:active{transform:scale(.95)}
+body:has(.ov) #fldFab{display:none}
+@media(min-width:761px){#fldFab{bottom:24px}}
 </style>
 </head>
 <body data-company="Kisan Enterprises">
@@ -2547,7 +2556,7 @@ var RC = {}, GEN = 0;
 var FAST = {};
 var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1,  'adm|attFlags': 1 };
 var SOFT = { 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
-var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1 };
+var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1 };
 
 function ckey(k, p) {
   var q = {}, cy = new Date().getFullYear();
@@ -2834,6 +2843,225 @@ function fabHtml() {
     return '<a class="fa" data-a="' + x[0] + '"' + (x[1] ? ' data-p="' + x[1] + '"' : '') + '><span>' + x[3] + '</span><i>' + x[2] + '</i></a>';
   }).join('') + '</div><button class="fm" data-a="fab" aria-label="Quick actions">+</button></div>';
 }
+function fieldFabHtml() {
+  if (S.role !== 'emp') return '';
+  return '<button id="fldFab" class="hide" data-a="go" data-p="field" aria-label="Field Staff"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Field</span></button>';
+}
+function fieldFabSync(p) {
+  var b = $('#fldFab'); if (!b) return;
+  b.classList.toggle('hide', !(S.role === 'emp' && S.fieldOn && p !== 'field'));
+}
+var FLD = { list: [], dateText: '' };
+function fldRowsHtml() {
+  if (!FLD.list.length) return '<div class="ld">No selfie taken today.</div>';
+  return FLD.list.map(function (x) {
+    return '<div class="mw-r" data-a="fldOpen" data-id="' + esc(x.id) + '" style="cursor:pointer"><div class="mw-m" style="width:78px">' + esc(x.time) +
+      '</div><div class="mw-c"><span class="at-chip ' + (x.good ? 'ok' : 'warn') + '">' + esc(x.label) + '</span>' + (x.visitId ? '<span class="at-chip gry">Form saved</span>' : '<span class="at-chip bad">Form pending</span>') + '</div><span class="hint">Open &rsaquo;</span></div>';
+  }).join('');
+}
+function fldDraw() {
+  main('<h2>Field Staff</h2><div class="card"><div class="at-top"><h3>Selfie</h3><span class="at-date">' + esc(FLD.dateText) + '</span></div>' +
+    '<button class="btn at-btn" data-a="fldSelfie">Take selfie</button>' +
+    '<div class="hint" style="margin-top:8px">Front camera only. Your location is read when the selfie is taken. You can take more than one selfie.</div></div>' +
+    '<div class="card mw"><h3>Today\'s selfies</h3><div id="fldList">' + fldRowsHtml() + '</div></div>' +
+    '<div class="card mw"><h3>My visits (last 14 days)</h3><div id="fldVis">' + fldVisRows() + '</div></div>');
+}
+PG.field = function () {
+  return E('fldToday').then(function (d) {
+    AT.off = d.serverNow - Date.now();
+    FLD.list = d.list || []; FLD.dateText = d.dateText || ''; FLD.visits = d.visits || [];
+    fldDraw();
+  });
+};
+function fldAdd(s) {
+  if (!FLD.list.some(function (x) { return x.id === s.id; })) FLD.list.unshift(s);
+  var el = $('#fldList'); if (el && S.page === 'field') el.innerHTML = fldRowsHtml();
+}
+function fldThumb(id) {
+  var key = 'F' + id;
+  function put(u) { var e = document.getElementById('fldph'); if (e && e.getAttribute('data-id') === id) e.innerHTML = u ? '<img alt="Selfie" src="' + u + '">' : '&ndash;'; }
+  if (AT.ph[key]) { put(AT.ph[key]); return; }
+  E('fldPhoto', { id: id }).then(function (r) { AT.ph[key] = 'data:' + r.mime + ';base64,' + r.data; put(AT.ph[key]); })
+    .catch(function (e) { if (e && e.code === 'AUTH') { signOut(e.message); return; } put(''); });
+}
+function fldDetail(id) {
+  var x = FLD.list.filter(function (y) { return y.id === id; })[0]; if (!x) return;
+  var body = '<div class="cal-ps"><div class="cal-p"><div class="at-th cal-th" id="fldph" data-id="' + esc(id) + '"><span class="spin"></span></div><small>Selfie</small></div></div>' +
+    '<div class="kv cal-kv"><b>Time</b><span>' + esc(x.time) + '</span><b>Date</b><span>' + esc(x.dateText) + '</span>' +
+    '<b>Location</b><span><span class="at-chip ' + (x.good ? 'ok' : 'warn') + '">' + esc(x.label) + '</span></span>' +
+    '<b>GPS accuracy</b><span>' + (x.acc != null ? '&plusmn;' + x.acc + ' m' : '-') + '</span></div>' +
+    mapLinks([['Selfie', x.lat, x.lng]]);
+  modal('Field selfie', body, '<button class="btn gr" data-a="mclose">Close</button>' + (x.visitId ? '' : '<button class="btn ok" data-a="fldForm" data-id="' + esc(id) + '">Fill visit form</button>'));
+  fldThumb(id);
+}
+H.fldOpen = function (d) { fldDetail(d.id); };
+H.fldSelfie = function () {
+  PN = { type: 'FIELD', stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false, locating: false, locTok: 0, best: null, locStart: 0, locTm: null, locDeadline: 0,
+    req: 'F' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10), clock: null };
+  modal('Field selfie', pnBody(), '<span></span>');
+  var m = $('#modal .md'); if (m) m.classList.add('pn');
+  pnFoot('<button class="btn gr" data-a="mclose">Cancel</button><button class="btn pn-main" disabled>Starting camera...</button>');
+  var dt = $('#pnDate'); if (dt) dt.textContent = FLD.dateText || '';
+  pnTick(); PN.clock = setInterval(pnTick, 1000);
+  pnLocShow(); pnWatchStart(); pnStartCam();   // GPS warms up while the camera starts
+};
+function pnStepField(cancel) {
+  var warnEl = $('#pnWarn'), w = '', ok = false;
+  if (PN.locating) w = '<div class="msg i"><span class="spin"></span> Fetching your location... please wait.</div>';
+  else if (!PN.pos) w = '<div class="msg e"><b>Location not available, try again.</b> The selfie is not saved without your location. Turn on GPS, allow location and tap "Try location again".</div>';
+  else {
+    ok = true;
+    w = PN.pos.acc <= LOC_GOOD ? '<div class="msg o"><b>Accurate location</b> (&plusmn;' + PN.pos.acc + ' m)</div>'
+      : '<div class="msg w"><b>Approximate location (' + PN.pos.acc + ' m)</b></div>';
+  }
+  if (warnEl) warnEl.innerHTML = w;
+  pnFoot(cancel + (PN.locating ? '' : '<button class="btn gr" data-a="pnRetake">Retake</button>') +
+    (!PN.locating && !PN.pos ? '<button class="btn pn-main" data-a="pnRetryLoc">Try location again</button>' : '') +
+    (ok ? '<button class="btn pn-main ok" id="pnBtn" data-a="fldSend">Save selfie</button>' : ''));
+}
+H.fldSend = function (d, b) {
+  if (!PN || PN.type !== 'FIELD' || !PN.photo || PN.busy) return;
+  var L = PN.pos && PN.best && PN.best.acc < PN.pos.acc ? PN.best : PN.pos;
+  if (!L) { toast('Location not available, try again.', true); return; }
+  var p = { photo: { data: PN.photo }, requestId: PN.req, lat: L.lat, lng: L.lng, accuracy: L.acc };
+  PN.busy = true;
+  run(b, function () {
+    return E('fldSelfie', p).then(function (r) {
+      toast(r.message);
+      pnCleanup();                 // stops camera, GPS and clock; the same pop-up window is reused for the details
+      fldAdd(r.selfie);
+      fldDetail(r.selfie.id);
+    });
+  }, 'Saving...').then(function () { if (PN) PN.busy = false; });
+};
+/* ---------- STEP 3: visit form ---------- */
+var FV = null, FV_MAX = 260000;   // card / requirement photo: about 200 KB (separate from the selfie limit)
+var FV_UP = ' style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" autocomplete="off"';
+function fvLab(k, t) { return t + (FV.info.required[k] ? ' <span style="color:#c0392b">*</span>' : ''); }
+function fvText(k, label, attrs) { return fld(fvLab(k, label), '<input type="text" id="fv_' + k + '"' + (attrs || FV_UP) + '>'); }
+function fvSel(k, label, list) {
+  return fld(fvLab(k, label), '<div class="sec" style="margin-top:0;display:flex;flex-wrap:wrap;gap:4px 18px">' +
+    list.map(function (x) {
+      return '<label class="hb"><input type="checkbox" class="fvo fvo_' + k + '" data-ch="fvPick" data-k="' + k + '" value="' + esc(x) + '"> <span>' + esc(x) + '</span></label>';
+    }).join('') + '</div>', 'Tick one. Tick it again to clear.');
+}
+function fvGet(k) { var g = $$('.fvo_' + k + ':checked'); return g.length ? g[0].value : v('fv_' + k); }
+function fvPhoto(k, label) {
+  return fld(fvLab(k + 'Photo', label), '<div class="cal-ps"><div class="at-th cal-th" id="fvph_' + k + '">&#128247;</div></div>' +
+    '<input type="file" id="fvf_' + k + '" class="pn-file" accept="image/*" capture="environment" data-ch="fvPhoto" data-k="' + k + '">' +
+    '<label class="btn sm ghost pn-lb" for="fvf_' + k + '">Take photo</label>');
+}
+H.fldForm = function (d) {
+  modalLoading('Visit form');
+  E('fldFormInfo').then(function (i) {
+    FV = { selfieId: d.id, info: i, card: '', req: '', reqKey: 'V' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10) };
+    var o = i.options;
+    var staff = i.staff.map(function (s) {
+      var me = s.id === i.selfId;
+      return '<label class="hb"><input type="checkbox" class="fvst" value="' + esc(s.id) + '"' + (me ? ' checked disabled' : '') + '> <span>' + esc(s.name) + (me ? ' (you)' : '') + '</span></label>';
+    }).join('');
+    var body = '<div class="msg i">Date and time are saved automatically by the server. Typed text becomes CAPITAL LETTERS.' + (Object.keys(i.required).length ? ' Fields marked <b style="color:#c0392b">*</b> are required.' : '') + '</div>' +
+      fld('Employees on this visit', '<div class="sec" style="margin-top:0">' + staff + '</div>', 'Tick the other Field Staff who were with you. The visit appears in their Field tab too.') +
+      fvText('customer', 'Customer / company name') + fvText('contact', 'Contact person name') + fvText('designation', 'Designation') +
+      fld(fvLab('phone', 'Phone no. (10 digits)'), '<input type="text" id="fv_phone" maxlength="10" inputmode="numeric" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,\'\').slice(0,10)">') +
+      fld(fvLab('address', 'Address'), '<textarea id="fv_address" rows="2" maxlength="300"' + FV_UP + '></textarea>') +
+      fld(fvLab('email', 'Email'), '<input type="text" id="fv_email" inputmode="email" autocomplete="off" autocapitalize="none">') +
+      fvSel('ctype', 'Type of customer', o.ctype) + fvSel('purpose', 'Purpose of visit', o.purpose) +
+      '<div id="fvAmt" style="display:none">' + fld(fvLab('amount', 'Amount collected (Rs)'), '<input type="number" id="fv_amount" min="0" step="any" inputmode="decimal">') + '</div>' +
+      fvText('product', 'Product they are interested in') +
+      fld(fvLab('discussion', 'Any discussion'), '<textarea id="fv_discussion" rows="4" maxlength="2000"' + FV_UP + '></textarea>') +
+      fvSel('interest', 'Interest level', o.interest) + fvSel('timeline', 'Expected timeline', o.timeline) +
+      fld(fvLab('orderSize', 'Expected order size (Rs)'), '<input type="number" id="fv_orderSize" min="0" step="any" inputmode="decimal">') +
+      fvSel('nextAction', 'Next action', o.nextAction) +
+      fvPhoto('card', 'Photo of visiting card') + fvPhoto('req', 'Photo for requirement');
+    modal('Visit form', body, '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn ok" data-a="fvSave">Save visit</button>');
+  }).catch(function (e) { closeModal(); if (e.code === 'AUTH') signOut(e.message); else toast(e.message, true); });
+};
+CHG.fvPick = function (el) {
+  var k = el.getAttribute('data-k');
+  if (el.checked) $$('.fvo_' + k).forEach(function (c) { if (c !== el) c.checked = false; });
+  if (k === 'purpose') { var a = $('#fvAmt'); if (a) a.style.display = fvGet('purpose') === 'PAYMENT COLLECTION' ? '' : 'none'; }
+};
+/* camera only (capture), then shrink: about 700-1000 px wide, about 120-200 KB */
+function fvShrink(im) {
+  var ws = [1000, 850, 700, 560], q = [0.72, 0.6, 0.5, 0.4];
+  for (var a = 0; a < ws.length; a++) {
+    var w = Math.min(ws[a], im.naturalWidth), h = Math.round(im.naturalHeight * w / im.naturalWidth);
+    var c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h);
+    for (var i = 0; i < q.length; i++) { var u = c.toDataURL('image/jpeg', q[i]); if (u.length <= FV_MAX) return u; }
+  }
+  return '';
+}
+CHG.fvPhoto = function (el) {
+  var f = el.files && el.files[0], k = el.getAttribute('data-k');
+  if (!f || !FV) return;
+  if (!/^image\//.test(f.type)) { toast('Please take a photo.', true); el.value = ''; return; }
+  var r = new FileReader();
+  r.onload = function () {
+    var im = new Image();
+    im.onload = function () {
+      var u = fvShrink(im); el.value = '';
+      if (!u) { toast('The photo is too large. Please take it again.', true); return; }
+      if (!FV) return;
+      FV[k] = u;
+      var t = document.getElementById('fvph_' + k); if (t) t.innerHTML = '<img alt="Photo" src="' + u + '">';
+    };
+    im.onerror = function () { toast('That photo could not be read. Please try again.', true); };
+    im.src = r.result;
+  };
+  r.onerror = function () { toast('That photo could not be read. Please try again.', true); };
+  r.readAsDataURL(f);
+};
+H.fvSave = function (d, b) {
+  if (!FV || FV.busy) return;
+  var p = { selfieId: FV.selfieId, requestId: FV.reqKey, staff: $$('.fvst:checked').map(function (c) { return c.value; }) };
+  ['customer', 'contact', 'designation', 'phone', 'address', 'email', 'ctype', 'purpose', 'product', 'discussion', 'interest', 'timeline', 'orderSize', 'nextAction', 'amount']
+    .forEach(function (k) { p[k] = fvGet(k); });
+  if (FV.card) p.cardPhoto = { data: FV.card.split(',')[1] };
+  if (FV.req) p.reqPhoto = { data: FV.req.split(',')[1] };
+  var pay = p.purpose === 'PAYMENT COLLECTION', miss = [];       // quick message only; the server enforces the same rule
+  FV.info.fields.forEach(function (f) {
+    var k = f[0]; if (!FV.info.required[k] || (k === 'amount' && !pay)) return;
+    var has = k === 'cardPhoto' ? !!FV.card : k === 'reqPhoto' ? !!FV.req : String(p[k] || '').trim() !== '';
+    if (!has) miss.push(f[1]);
+  });
+  if (miss.length) { toast('Please fill: ' + miss.join(', ') + '.', true); return; }
+  if (p.phone && String(p.phone).length !== 10) { toast('Phone number must be 10 digits.', true); return; }
+  FV.busy = true;
+  run(b, function () {
+    return E('fldVisitSave', p).then(function (r) {
+      toast(r.message);
+      FLD.list.forEach(function (x) { if (x.id === FV.selfieId) x.visitId = r.visit.id; });
+      FLD.visits = FLD.visits || [];
+      if (!FLD.visits.some(function (x) { return x.id === r.visit.id; })) FLD.visits.unshift(r.visit);
+      FV = null; closeModal();
+      var a = $('#fldList'), c = $('#fldVis');
+      if (S.page === 'field') { if (a) a.innerHTML = fldRowsHtml(); if (c) c.innerHTML = fldVisRows(); }
+    });
+  }, 'Saving...').then(function () { if (FV) FV.busy = false; });
+};
+function fldVisRows() {
+  var l = FLD.visits || [];
+  if (!l.length) return '<div class="ld">No visits yet.</div>';
+  return l.map(function (x) {
+    return '<div class="mw-r" data-a="fvOpen" data-id="' + esc(x.id) + '" style="cursor:pointer"><div class="mw-m" style="width:78px">' + esc(x.dateShort) +
+      '<div class="hint" style="font-weight:400">' + esc(x.time) + '</div></div><div class="mw-c"><b>' + esc(x.customer || '-') + '</b>' +
+      (x.purpose ? '<span class="mw-ch">' + esc(x.purpose) + '</span>' : '') + (x.interest ? '<span class="mw-ch">' + esc(x.interest) + '</span>' : '') +
+      '</div><span class="hint">Open &rsaquo;</span></div>';
+  }).join('');
+}
+H.fvOpen = function (d) {
+  var x = (FLD.visits || []).filter(function (y) { return y.id === d.id; })[0]; if (!x) return;
+  var inr = function (n) { return n == null ? '' : 'Rs ' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 }); };
+  var rows = [['Date and time', x.dateText + ', ' + x.time], ['Recorded by', x.by], ['Employees', x.names.join(', ')], ['Customer', x.customer],
+    ['Contact person', x.contact], ['Designation', x.designation], ['Phone', x.phone], ['Address', x.address], ['Email', x.email],
+    ['Type of customer', x.ctype], ['Purpose', x.purpose], ['Amount collected', inr(x.amount)], ['Product', x.product], ['Discussion', x.discussion],
+    ['Interest level', x.interest], ['Expected timeline', x.timeline], ['Expected order size', inr(x.orderSize)], ['Next action', x.nextAction],
+    ['Card photo', x.hasCard ? 'Saved' : ''], ['Requirement photo', x.hasReq ? 'Saved' : '']];
+  modal('Visit - ' + (x.customer || x.id), '<div class="kv">' + rows.map(function (r) {
+    return r[1] ? '<b>' + esc(r[0]) + '</b><span style="white-space:pre-wrap">' + esc(r[1]) + '</span>' : '';
+  }).join('') + '</div>', '<button class="btn gr" data-a="mclose">Close</button>');
+};
 function fabSync(p) {
   var f = $('#fab'); if (!f) return;
   var show = S.role === 'emp' ? ['home', 'apps', 'att', 'lvd', 'hol'] : ['dash', 'aapps', 'aatt', 'emps', 'bal'];
@@ -2967,7 +3195,7 @@ function save() {
   try { localStorage.setItem('kl', s); } catch (e) { try { sessionStorage.setItem('kl', s); } catch (x) { } }
 }
 function signOut(msg) {
-  S.token = null; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
+  S.token = null; S.fieldOn = false; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
   try { localStorage.removeItem('kl'); } catch (e) { }
   try { sessionStorage.removeItem('kl'); } catch (e) { }
   closeModal(); S.view = 'login'; S.otp = false; login(msg);
@@ -3152,7 +3380,7 @@ function bnavSync(p) {
 }
 function shell() {
   var nav = S.role === 'emp' ? EN : AN;
-  $('#app').innerHTML = '<div class="top"><button class="burger" data-a="burger">&#9776;</button><div class="brand"><span class="blg">' + logoHtml() + '</span><span class="bnm">' + esc(CO) + '<small>' + (S.role === 'emp' ? 'Employee Portal' : 'Admin Portal') + '<span class="bu"> &middot; ' + esc(S.user && S.user.name) + '</span></small></span></div><div class="who"><button class="btn sm ghost rf" data-a="rfr" aria-label="Refresh">&#8635;</button><span class="nm">' + esc(S.user && S.user.name) + '</span><span class="chip">' + (S.role === 'emp' ? 'Employee' : 'Admin') + '</span><button class="btn sm ghost" data-a="logout">Sign out</button></div></div><div class="lay"><nav id="nav">' + navHtml(nav) + '<div class="sep so"></div><a class="so" data-a="logout">&#9211; Sign out</a></nav><main id="main"></main></div>' + bnavHtml() + fabHtml();
+  $('#app').innerHTML = '<div class="top"><button class="burger" data-a="burger">&#9776;</button><div class="brand"><span class="blg">' + logoHtml() + '</span><span class="bnm">' + esc(CO) + '<small>' + (S.role === 'emp' ? 'Employee Portal' : 'Admin Portal') + '<span class="bu"> &middot; ' + esc(S.user && S.user.name) + '</span></small></span></div><div class="who"><button class="btn sm ghost rf" data-a="rfr" aria-label="Refresh">&#8635;</button><span class="nm">' + esc(S.user && S.user.name) + '</span><span class="chip">' + (S.role === 'emp' ? 'Employee' : 'Admin') + '</span><button class="btn sm ghost" data-a="logout">Sign out</button></div></div><div class="lay"><nav id="nav">' + navHtml(nav) + '<div class="sep so"></div><a class="so" data-a="logout">&#9211; Sign out</a></nav><main id="main"></main></div>' + bnavHtml() + fabHtml() + fieldFabHtml();
   tellReady();
 }
 H.burger = function () { $('#nav').classList.toggle('open'); };
@@ -3176,7 +3404,7 @@ document.addEventListener('visibilitychange', function () {
 H.go = function (d) {
   var prev = S.page;
   if (!d.pop && prev !== d.p) { if (prev == null) { try { history.replaceState({ p: d.p }, ''); } catch (e) { } } else hpush({ p: d.p }); }
-  S.page = d.p; $$('#nav a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-p') === d.p); }); navApply(true); bnavSync(d.p); fabSync(d.p); S.anim = true; var n = $('#nav'); if (n) n.classList.remove('open');
+  S.page = d.p; $$('#nav a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-p') === d.p); }); navApply(true); bnavSync(d.p); fabSync(d.p); fieldFabSync(d.p); S.anim = true; var n = $('#nav'); if (n) n.classList.remove('open');
   loader(); Promise.resolve().then(function () { return PG[d.p](); }).then(function () { if (!S.warmed && S.role) { S.warmed = true; setTimeout(warm, 600); } }).catch(function (e) { if (e.code === 'AUTH') signOut(e.message); else if (S.page === d.p) main('<div class="msg e">' + esc(e.message) + '</div>'); });
 };
 function reload() { H.go({ p: S.page }); }
@@ -3261,7 +3489,7 @@ main('<h2>Welcome, ' + esc(S.user && S.user.name) + '</h2>' +
   '<div id="attCal"></div></div>');
   attBoot(S.user ? String(S.user.id) : '');
   return E('home').then(function (d) {
-    var al = d.employee.allowed || ['CL', 'SL', 'OTHER']; S.allowed = al;
+    var al = d.employee.allowed || ['CL', 'SL', 'OTHER']; S.allowed = al; S.fieldOn = !!d.field; fieldFabSync('home');
     var lt = $('#etLv'); if (lt && d.counts.pending) lt.innerHTML = 'Leave <i style="background:#e0a100;color:#3a2900;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">' + d.counts.pending + '</i>';
     var sa = $('#nav a[data-p="eslip"]'); if (sa) sa.style.display = d.payslip ? '' : 'none';
     var sp = $('#nav a[data-p="salpay"]'); if (sp) sp.style.display = d.accountant ? '' : 'none';
@@ -3423,7 +3651,7 @@ function pnBody() {
   return '<div class="pn-clk"><div><small>Server time</small><b id="pnClock">--:--:--</b></div><div class="pn-dt" id="pnDate"></div></div>' +
     '<div class="pn-loc" id="pnLoc"></div><div class="pn-cam" id="pnCam"><div class="ld">Starting camera...</div></div><div id="pnWarn"></div>' +
 '<input type="file" id="pnFile" class="pn-file" accept="image/*" capture="user" data-ch="pnFile">' +
-    '<div class="pn-con">By punching, you agree that your <b>photo, the time and your location</b> are recorded and can be seen by Admin.</div>';
+    '<div class="pn-con">' + (PN && PN.type === 'FIELD' ? 'By taking a selfie' : 'By punching') + ', you agree that your <b>photo, the time and your location</b> are recorded and can be seen by Admin.</div>';
 }
 H.atPunch = function (d) {
   var type = d.t === 'OUT' ? 'OUT' : 'IN';
@@ -3514,7 +3742,7 @@ function pnLocShow() {
     var m = { denied: 'Location permission was denied or blocked. Allow location for this site in your phone or browser settings.',
       timeout: 'Location is taking too long. Check that GPS is switched on.', unavailable: 'Your device could not find its location.',
       blocked: 'Location is blocked on this page.' }[PN.locErr];
-    h = '<span class="at-chip gry">Location not available</span><div class="pn-lw">' + esc(m) + ' You cannot punch until your location is fetched.</div><button class="lnk" data-a="pnRetryLoc">Try location again</button>';
+    h = '<span class="at-chip gry">Location not available</span><div class="pn-lw">' + esc(m) + (PN.type === 'FIELD' ? ' The selfie is not saved without your location.' : ' You cannot punch until your location is fetched.') + '</div><button class="lnk" data-a="pnRetryLoc">Try location again</button>';
   } else if (!PN.photo) h = '<span class="at-chip gry">Your location is read once, when you take the selfie</span>';
   el.innerHTML = h;
 }
@@ -3611,6 +3839,7 @@ H.pnRetake = function () {
 /* distance check (server calculated) then the confirm step */
 function pnCheckLoc() {
   if (!PN || !PN.pos) return;
+  if (PN.type === 'FIELD') { pnStep('confirm'); return; }
   var snap = PN.pos; PN.snap = snap; PN.chk = null; pnStep('confirm');
   E('attCheck', { lat: snap.lat, lng: snap.lng }).then(function (r) {
     if (!PN || PN.snap !== snap) return;
@@ -3630,10 +3859,11 @@ function pnStep(step) {
   if (step === 'cam') {
     if (warnEl) warnEl.innerHTML = '';
     pnFoot(cancel + (PN.mode === 'live'
-      ? '<button class="btn pn-main" id="pnBtn" data-a="pnShoot">Take selfie &amp; ' + verb + '</button>'
-      : '<label class="btn pn-main pn-lb" for="pnFile">Take selfie &amp; ' + verb + '</label>'));
+      ? '<button class="btn pn-main" id="pnBtn" data-a="pnShoot">Take selfie' + (PN.type === 'FIELD' ? '' : ' &amp; ' + verb) + '</button>'
+      : '<label class="btn pn-main pn-lb" for="pnFile">Take selfie' + (PN.type === 'FIELD' ? '' : ' &amp; ' + verb) + '</label>'));
     return;
   }
+  if (PN.type === 'FIELD') { pnStepField(cancel); return; }
   var c = PN.chk, w, label = 'Confirm ' + verb, ready = true, cls = '';
   if (PN.locating) {
     ready = false; label = 'Please wait...';
@@ -4633,13 +4863,13 @@ H.empForm = function (d) {
   var e = d.id ? S.emps.filter(function (x) { return x.id === d.id; })[0] : {}; S.editId = d.id || '';
   modal(d.id ? 'Edit employee ' + d.id : 'Add employee', '<div class="row"><div>' + fld('Full name', '<input type="text" id="en" value="' + esc(e.name) + '">') + '</div><div>' + fld('Status', '<select id="es">' + opts([['Active', 'Active'], ['Inactive', 'Inactive']], e.status || 'Active') + '</select>') + '</div></div><div class="row"><div>' + fld('Inactive from (date)', '<input type="date" id="eif" value="' + esc(e.inactiveFrom || '') + '">', 'Only for Inactive employees. Payslip salary is counted up to and including this date. Blank = today.') + '</div></div><div class="row"><div>' + fld('Email', '<input type="text" id="ee" value="' + esc(e.email) + '">') + '</div><div>' + fld('Mobile (10 digits)', '<input type="text" id="ep" value="' + esc(e.phone) + '">') + '</div></div><div class="row"><div>' + fld('Department', '<input type="text" id="ed" value="' + esc(e.department) + '">') + '</div><div>' + fld('Designation', '<input type="text" id="eg" value="' + esc(e.designation) + '">') + '</div></div>' + fld('Joining date', '<input type="date" id="ej" value="' + esc(e.joining) + '">', 'Employees log in with the email or mobile number saved here.') + fld('Leave types this employee can use', ['CL', 'SL', 'OTHER'].map(function (k) {
     return '<label class="hb"><input type="checkbox" id="al_' + k + '"' + ((e.allowed || ['CL', 'SL', 'OTHER']).indexOf(k) > -1 ? ' checked' : '') + '> ' + LT[k] + '</label>';
-  }).join('')) + fld('Attendance', '<label class="hb"><input type="checkbox" id="epo"' + (e.punchInOnly ? ' checked' : '') + '> Punch-in only (no punch-out needed)</label>', 'Use for staff who only punch in, for example field staff.'), '<button class="btn gr" data-a="mclose">Cancel</button>' + (d.id ? '<button class="btn gr" data-a="empCode" data-id="' + esc(d.id) + '">Login code</button>' : '') + '<button class="btn" data-a="empSave">Save</button>');
+  }).join('')) + fld('Attendance', '<label class="hb"><input type="checkbox" id="epo"' + (e.punchInOnly ? ' checked' : '') + '> Punch-in only (no punch-out needed)</label>', 'Use for staff who only punch in, for example field staff.') + fld('Field Staff', '<label class="hb"><input type="checkbox" id="efs"' + (e.fieldStaff ? ' checked' : '') + '> Field Staff (shows the Field button in the Employee Portal)</label>', 'Only Admin can assign this. Other employees never see the button.'), '<button class="btn gr" data-a="mclose">Cancel</button>' + (d.id ? '<button class="btn gr" data-a="empCode" data-id="' + esc(d.id) + '">Login code</button>' : '') + '<button class="btn" data-a="empSave">Save</button>');
 };
 H.empSave = function (d, b) {
   var al = ['CL', 'SL', 'OTHER'].filter(function (k) { return v('al_' + k); });
   run(b, function () {
-    return A('saveEmployee', { id: S.editId, name: v('en'), status: v('es'), email: v('ee'), phone: v('ep'), department: v('ed'), designation: v('eg'), joiningDate: v('ej'), allowed: al, punchInOnly: !!v('epo'), inactiveFrom: v('eif') }).then(function (r) {
-      patchEmp(S.editId, { name: v('en'), status: v('es'), email: v('ee'), phone: v('ep'), department: v('ed'), designation: v('eg'), joining: v('ej'), allowed: al, punchInOnly: !!v('epo'), inactiveFrom: v('eif') });
+    return A('saveEmployee', { id: S.editId, name: v('en'), status: v('es'), email: v('ee'), phone: v('ep'), department: v('ed'), designation: v('eg'), joiningDate: v('ej'), allowed: al, punchInOnly: !!v('epo'), fieldStaff: !!v('efs'), inactiveFrom: v('eif') }).then(function (r) {
+      patchEmp(S.editId, { name: v('en'), status: v('es'), email: v('ee'), phone: v('ep'), department: v('ed'), designation: v('eg'), joining: v('ej'), allowed: al, punchInOnly: !!v('epo'), fieldStaff: !!v('efs'), inactiveFrom: v('eif') });
       closeModal(); toast(r.message); reload();
     });
   });
