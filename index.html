@@ -2914,7 +2914,7 @@ function fldDraw() {
   state = closed ? 'Day completed' : pend ? pend + ' visit form(s) pending' : 'Take a selfie at the visit site';
   big = closed ? '<button class="pbtn done" disabled><b>&#10003;</b><small>COMPLETED</small></button>'
     : open ? '<button class="pbtn done" disabled><span class="pr"></span><span class="pr p2"></span><small style="font-size:14px">DAY ON</small></button>'
-    : '<button class="pbtn done" disabled><small style="font-size:12px">PUNCH IN FIRST</small></button>';
+    : '<button class="pbtn done" disabled><small style="font-size:12px">FIELD VISIT</small></button>';
   s1 = fldStepHtml(1, 'Odometer (start)', T.start ? 'Taken at punch in &middot; ' + esc(T.start.time) + ' &middot; ' + esc(T.start.km) + ' km' : 'Entered when you punch in (Attendance).',
     T.start ? 'done' : 'lock', T.start ? '<button class="ep-b" data-a="odoView" data-id="' + esc(T.start.id) + '">View</button>' : '');
   s2 = fldStepHtml(2, 'Selfie &amp; visit form', saved + ' visit form(s) saved' + (pend ? ', ' + pend + ' pending' : '') + '.',
@@ -3828,7 +3828,7 @@ function pnBody() {
 function pnOdoHtml() {
   if (!(S.fieldOn && PN && PN.type !== 'FIELD')) return '';
   return '<div class="sec" style="margin:0 0 12px"><b>Odometer (' + (PN.type === 'IN' ? 'start' : 'end') + ')</b>' +
-    fld('Reading (km) <span class="hint">(optional)</span>', '<input type="number" id="pnKm" min="0" step="any" inputmode="decimal">') +
+    fld('Reading (km)', '<input type="number" id="pnKm" min="0" step="any" inputmode="decimal">') +
     '<div class="cal-ps"><div class="at-th cal-th" id="pnOdPh">&#128247;</div></div>' +
     '<input type="file" id="pnOdFile" class="pn-file" accept="image/*" capture="environment" data-ch="pnOdo">' +
     '<label class="btn sm ghost pn-lb" for="pnOdFile">Take odometer photo</label></div>';
