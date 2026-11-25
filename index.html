@@ -2405,6 +2405,20 @@ html.wv{--sat:0px!important}
 #fldFab:active{transform:scale(.95)}
 body:has(.ov) #fldFab{display:none}
 @media(min-width:761px){#fldFab{bottom:24px}}
+/* ===== FIELD TRIP STEPS ===== */
+.fs-steps{display:flex;flex-direction:column;gap:8px;padding:14px}
+.fs-s{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.fs-n{width:30px;height:30px;border-radius:50%;background:#e3eef8;color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.fs-t{flex:1;min-width:0}
+.fs-t b{display:block;font-size:14px;color:var(--navy)}
+.fs-t small{display:block;font-size:12px;color:var(--mut);line-height:1.35;margin-top:2px}
+.fs-s.done{border-color:#bfe6cd;background:linear-gradient(180deg,#f2fbf6,#fff)}
+.fs-s.done .fs-n{background:var(--ok);color:#fff}
+.fs-s.now{border-color:var(--navy2);box-shadow:0 0 0 2px rgba(22,90,138,.15)}
+.fs-s.lock{opacity:.55;background:#f4f6f9}
+.fs-s .btn,.fs-s .ep-b{flex-shrink:0}
+.at-th.fs-big{width:100%;height:260px}
+.at-th.fs-big img{object-fit:contain;background:#000}
 </style>
 </head>
 <body data-company="Kisan Enterprises">
@@ -2556,7 +2570,7 @@ var RC = {}, GEN = 0;
 var FAST = {};
 var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1,  'adm|attFlags': 1 };
 var SOFT = { 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
-var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1 };
+var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|fldOdo': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1 };
 
 function ckey(k, p) {
   var q = {}, cy = new Date().getFullYear();
@@ -2853,33 +2867,134 @@ function fieldFabSync(p) {
 }
 var FLD = { list: [], dateText: '' };
 function fldRowsHtml() {
-  if (!FLD.list.length) return '<div class="ld">No field visit started today.</div>';
+  if (!FLD.list.length) return '<div class="ld">No visit selfie taken today.</div>';
   return FLD.list.map(function (x) {
     return '<div class="mw-r" data-a="fldOpen" data-id="' + esc(x.id) + '" style="cursor:pointer"><div class="mw-m" style="width:78px">' + esc(x.time) +
       '</div><div class="mw-c"><span class="at-chip ' + (x.good ? 'ok' : 'warn') + '">' + esc(x.label) + '</span>' + (x.visitId ? '<span class="at-chip gry">Form saved</span>' : '<span class="at-chip bad">Form pending</span>') + '</div><span class="hint">Open &rsaquo;</span></div>';
   }).join('');
 }
+function fldStepHtml(no, title, sub, state, btn) {
+  return '<div class="fs-s ' + state + '"><div class="fs-n">' + (state === 'done' ? '&#10003;' : no) + '</div>' +
+    '<div class="fs-t"><b>' + title + '</b><small>' + sub + '</small></div>' + (btn || '') + '</div>';
+}
 function fldDraw() {
-  var n = FLD.list.length;
-  var pend = FLD.list.filter(function (x) { return !x.visitId; }).length;
-  var state = !n ? 'Ready when you are' : pend ? pend + ' visit form(s) pending' : 'All visit forms saved';
+  var T = FLD.trip || { state: 'none' }, open = T.state === 'open', closed = T.state === 'closed';
+  var saved = T.formsSaved || 0, pend = T.formsPending || 0, canEnd = open && saved > 0;
+  var state = closed ? 'Trip finished' : !open ? 'Ready when you are' : pend ? pend + ' visit form(s) pending' : saved ? 'On the road' : 'Take a selfie at the visit site';
+  var big = open
+    ? '<button class="pbtn done" disabled><span class="pr"></span><span class="pr p2"></span><b>&#9654;</b><small>TRIP ON</small></button>'
+    : '<button class="pbtn in" data-a="odoOpen" data-t="START"><span class="pr"></span><span class="pr p2"></span><b>&#9758;</b><small>' + (closed ? 'NEW TRIP' : 'START VISIT') + '</small></button>';
+
+  var s1 = fldStepHtml(1, 'Odometer (start)',
+    T.start ? 'Submitted ' + esc(T.start.time) + ' &middot; ' + esc(T.start.km) + ' km' : 'Photo of the odometer before you leave the office.',
+    T.start ? 'done' : 'now',
+    T.start ? '<button class="ep-b" data-a="odoView" data-id="' + esc(T.start.id) + '">View</button>' : '<button class="btn sm ok" data-a="odoOpen" data-t="START">Enter reading</button>');
+  var s2 = fldStepHtml(2, 'Selfie &amp; visit form',
+    !T.start ? 'Opens after the odometer (start) is submitted.' : saved + ' visit form(s) saved' + (pend ? ', ' + pend + ' pending' : '') + (open ? '. Take a selfie at each visit site.' : '.'),
+    !T.start ? 'lock' : (saved > 0 ? 'done' : 'now'),
+    open ? '<button class="btn sm ok" data-a="fldSelfie">' + (saved || pend ? 'Add visit' : 'Take selfie') + '</button>' : '');
+  var s3 = fldStepHtml(3, 'Odometer (end)',
+    closed ? 'Submitted ' + esc(T.end.time) + ' &middot; ' + esc(T.end.km) + ' km &middot; ' + esc(T.distance) + ' km travelled'
+      : canEnd ? 'Photo of the odometer when you are back.' : 'Opens after at least one visit form is saved.',
+    closed ? 'done' : (canEnd ? 'now' : 'lock'),
+    closed ? '<button class="ep-b" data-a="odoView" data-id="' + esc(T.end.id) + '">View</button>'
+      : canEnd ? '<button class="btn sm ok" data-a="odoOpen" data-t="END">Enter reading</button>' : '');
+
   main('<h2>Field Staff</h2>' +
     '<div class="card at pk"><div class="pk-hero"><div class="pk-glow"></div>' +
     '<div class="pk-top"><div><div class="pk-gr">Field visit</div><small>' + esc(FLD.dateText) + '</small></div>' +
     '<span class="pk-live"><i></i>LIVE</span></div>' +
-    '<div class="pk-mid"><div class="pk-c"><div class="pk-work"><small>Visits today</small><b>' + n + '</b></div>' +
-    '<span class="pk-state">' + state + '</span></div>' +
-    '<button class="pbtn in" data-a="fldSelfie"><span class="pr"></span><span class="pr p2"></span><b>&#9758;</b><small>START VISIT</small></button></div></div>' +
-    '<div class="pk-notes"><div class="hint">Front camera selfie and your location are recorded when you start a visit. You can start more than one visit a day.</div></div></div>' +
+    '<div class="pk-mid"><div class="pk-c"><div class="pk-work"><small>Visit forms saved</small><b>' + saved + '</b></div>' +
+    '<span class="pk-state">' + state + '</span></div>' + big + '</div></div>' +
+    '<div class="fs-steps">' + s1 + s2 + s3 + '</div>' +
+    (canEnd && pend ? '<div class="pk-notes"><div class="msg w" style="margin:0">' + pend + ' selfie(s) still need a visit form. Open them below.</div></div>' : '') +
+    '<div class="pk-notes"><div class="hint">Photo, time and location are recorded and can be seen by Admin.</div></div></div>' +
     '<div class="card mw"><h3>Today\'s field visits</h3><div id="fldList">' + fldRowsHtml() + '</div></div>' +
     '<div class="card mw"><h3>My visits (last 14 days)</h3><div id="fldVis">' + fldVisRows() + '</div></div>');
 }
+function fldApply(d) {
+  AT.off = d.serverNow - Date.now();
+  FLD.list = d.list || []; FLD.dateText = d.dateText || ''; FLD.visits = d.visits || []; FLD.trip = d.trip || { state: 'none' };
+}
 PG.field = function () {
-  return E('fldToday').then(function (d) {
-    AT.off = d.serverNow - Date.now();
-    FLD.list = d.list || []; FLD.dateText = d.dateText || ''; FLD.visits = d.visits || [];
-    fldDraw();
+  return E('fldToday').then(function (d) { fldApply(d); fldDraw(); });
+};
+function fldReload() {
+  if (S.page !== 'field') return;
+  E('fldToday').then(function (d) { if (S.page === 'field') { fldApply(d); fldDraw(); } })
+    .catch(function (e) { if (e && e.code === 'AUTH') signOut(e.message); });
+}
+
+/* ---------- odometer (start / end) ---------- */
+var OD = null;
+function odoLocate() {   // best effort only: never blocks the reading
+  return new Promise(function (res) {
+    if (!navigator.geolocation) { res(null); return; }
+    var done = false, t = setTimeout(function () { if (!done) { done = true; res(null); } }, 8000);
+    try {
+      navigator.geolocation.getCurrentPosition(function (p) {
+        if (done) return; done = true; clearTimeout(t);
+        res({ lat: p.coords.latitude, lng: p.coords.longitude, acc: Math.round(p.coords.accuracy) });
+      }, function () { if (done) return; done = true; clearTimeout(t); res(null); }, { enableHighAccuracy: true, maximumAge: 20000, timeout: 7000 });
+    } catch (e) { if (!done) { done = true; clearTimeout(t); res(null); } }
   });
+}
+H.odoOpen = function (d) {
+  var type = d.t === 'END' ? 'END' : 'START', T = FLD.trip || {};
+  if (type === 'START' && T.state === 'open') { toast('Your trip has already started.', true); return; }
+  if (type === 'END' && !(T.state === 'open' && T.formsSaved > 0)) { toast('Save at least one visit form before the end reading.', true); return; }
+  OD = { type: type, photo: '', busy: false, req: 'O' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10) };
+  modal(type === 'START' ? 'Odometer (start)' : 'Odometer (end)',
+    '<div class="msg i">' + (type === 'START' ? 'Take a clear photo of the odometer and type the reading. Selfie and visit form open after this is submitted.' : 'Take a clear photo of the odometer and type the reading.') + '</div>' +
+    fld('Odometer reading (km) <span style="color:#c0392b">*</span>', '<input type="number" id="odKm" min="0" step="any" inputmode="decimal">',
+      type === 'END' && T.start ? 'Start reading was ' + esc(T.start.km) + ' km.' : '') +
+    fld('Odometer photo <span style="color:#c0392b">*</span>', '<div class="cal-ps"><div class="at-th cal-th" id="odPh">&#128247;</div></div>' +
+      '<input type="file" id="odFile" class="pn-file" accept="image/*" capture="environment" data-ch="odoPhoto">' +
+      '<label class="btn sm ghost pn-lb" for="odFile">Take photo</label>'),
+    '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn ok" data-a="odoSave">Submit</button>');
+};
+CHG.odoPhoto = function (el) {
+  var f = el.files && el.files[0];
+  if (!f || !OD) return;
+  if (!/^image\//.test(f.type)) { toast('Please take a photo.', true); el.value = ''; return; }
+  var r = new FileReader();
+  r.onload = function () {
+    var im = new Image();
+    im.onload = function () {
+      var u = fvShrink(im); el.value = '';
+      if (!u) { toast('The photo is too large. Please take it again.', true); return; }
+      if (!OD) return;
+      OD.photo = u;
+      var t = document.getElementById('odPh'); if (t) t.innerHTML = '<img alt="Odometer" src="' + u + '">';
+    };
+    im.onerror = function () { toast('That photo could not be read. Please try again.', true); };
+    im.src = r.result;
+  };
+  r.onerror = function () { toast('That photo could not be read. Please try again.', true); };
+  r.readAsDataURL(f);
+};
+H.odoSave = function (d, b) {
+  if (!OD || OD.busy) return;
+  var km = parseFloat(v('odKm'));
+  if (!isFinite(km) || km < 0) { toast('Please enter the odometer reading.', true); return; }
+  if (!OD.photo) { toast('Please take the odometer photo.', true); return; }
+  var p = { type: OD.type, km: km, photo: { data: OD.photo.split(',')[1] }, requestId: OD.req };
+  OD.busy = true;
+  run(b, function () {
+    return odoLocate().then(function (L) {
+      if (L) { p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc; }
+      return E('fldOdo', p);
+    }).then(function (r) { toast(r.message); OD = null; closeModal(); fldReload(); });
+  }, 'Saving...').then(function () { if (OD) OD.busy = false; });
+};
+H.odoView = function (d) {
+  var T = FLD.trip || {}, x = (T.start && T.start.id === d.id) ? T.start : (T.end && T.end.id === d.id ? T.end : null);
+  if (!x) return;
+  modal('Odometer (' + (x.kind === 'END' ? 'end' : 'start') + ')',
+    '<div class="cal-ps"><div class="at-th cal-th fs-big" id="fldph" data-id="' + esc(x.id) + '"><span class="spin"></span></div></div>' +
+    '<div class="kv cal-kv"><b>Reading</b><span>' + esc(x.km) + ' km</span><b>Time</b><span>' + esc(x.time) + '</span></div>',
+    '<button class="btn gr" data-a="mclose">Close</button>');
+  fldThumb(d.id);
 };
 function fldAdd(s) {
   if (!FLD.list.some(function (x) { return x.id === s.id; })) FLD.list.unshift(s);
@@ -2904,9 +3019,10 @@ function fldDetail(id) {
 }
 H.fldOpen = function (d) { fldDetail(d.id); };
 H.fldSelfie = function () {
+  if (!FLD.trip || FLD.trip.state !== 'open') { toast('Submit the odometer (start) reading first.', true); return; }
   PN = { type: 'FIELD', stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false, locating: false, locTok: 0, best: null, locStart: 0, locTm: null, locDeadline: 0,
     req: 'F' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10), clock: null };
-  modal('Start field visit', pnBody(), '<span></span>');
+  modal('Visit selfie', pnBody(), '<span></span>');
   var m = $('#modal .md'); if (m) m.classList.add('pn');
   pnFoot('<button class="btn gr" data-a="mclose">Cancel</button><button class="btn pn-main" disabled>Starting camera...</button>');
   var dt = $('#pnDate'); if (dt) dt.textContent = FLD.dateText || '';
@@ -2925,7 +3041,7 @@ function pnStepField(cancel) {
   if (warnEl) warnEl.innerHTML = w;
   pnFoot(cancel + (PN.locating ? '' : '<button class="btn gr" data-a="pnRetake">Retake</button>') +
     (!PN.locating && !PN.pos ? '<button class="btn pn-main" data-a="pnRetryLoc">Try location again</button>' : '') +
-    (ok ? '<button class="btn pn-main ok" id="pnBtn" data-a="fldSend">Start visit</button>' : ''));
+    (ok ? '<button class="btn pn-main ok" id="pnBtn" data-a="fldSend">Save selfie</button>' : ''));
 }
 H.fldSend = function (d, b) {
   if (!PN || PN.type !== 'FIELD' || !PN.photo || PN.busy) return;
@@ -2937,7 +3053,7 @@ H.fldSend = function (d, b) {
     return E('fldSelfie', p).then(function (r) {
       toast(r.message);
       pnCleanup();                 // stops camera, GPS and clock; the same pop-up window is reused for the details
-      fldAdd(r.selfie);
+      fldAdd(r.selfie); fldReload();
       fldDetail(r.selfie.id);
     });
   }, 'Saving...').then(function () { if (PN) PN.busy = false; });
@@ -3044,7 +3160,7 @@ H.fvSave = function (d, b) {
       if (!FLD.visits.some(function (x) { return x.id === r.visit.id; })) FLD.visits.unshift(r.visit);
       FV = null; closeModal();
       var a = $('#fldList'), c = $('#fldVis');
-      if (S.page === 'field') { if (a) a.innerHTML = fldRowsHtml(); if (c) c.innerHTML = fldVisRows(); }
+      if (S.page === 'field') { if (a) a.innerHTML = fldRowsHtml(); if (c) c.innerHTML = fldVisRows(); fldReload(); }
     });
   }, 'Saving...').then(function () { if (FV) FV.busy = false; });
 };
@@ -3659,7 +3775,7 @@ function pnBody() {
   return '<div class="pn-clk"><div><small>Server time</small><b id="pnClock">--:--:--</b></div><div class="pn-dt" id="pnDate"></div></div>' +
     '<div class="pn-loc" id="pnLoc"></div><div class="pn-cam" id="pnCam"><div class="ld">Starting camera...</div></div><div id="pnWarn"></div>' +
 '<input type="file" id="pnFile" class="pn-file" accept="image/*" capture="user" data-ch="pnFile">' +
-    '<div class="pn-con">' + (PN && PN.type === 'FIELD' ? 'By starting a visit' : 'By punching') + ', you agree that your <b>photo, the time and your location</b> are recorded and can be seen by Admin.</div>';
+    '<div class="pn-con">' + (PN && PN.type === 'FIELD' ? 'By taking a selfie' : 'By punching') + ', you agree that your <b>photo, the time and your location</b> are recorded and can be seen by Admin.</div>';
 }
 H.atPunch = function (d) {
   var type = d.t === 'OUT' ? 'OUT' : 'IN';
@@ -3867,8 +3983,8 @@ function pnStep(step) {
   if (step === 'cam') {
     if (warnEl) warnEl.innerHTML = '';
     pnFoot(cancel + (PN.mode === 'live'
-      ? '<button class="btn pn-main" id="pnBtn" data-a="pnShoot">Take selfie' + (PN.type === 'FIELD' ? ' &amp; start visit' : ' &amp; ' + verb) + '</button>'
-      : '<label class="btn pn-main pn-lb" for="pnFile">Take selfie' + (PN.type === 'FIELD' ? ' &amp; start visit' : ' &amp; ' + verb) + '</label>'));
+      ? '<button class="btn pn-main" id="pnBtn" data-a="pnShoot">Take selfie' + (PN.type === 'FIELD' ? '' : ' &amp; ' + verb) + '</button>'
+      : '<label class="btn pn-main pn-lb" for="pnFile">Take selfie' + (PN.type === 'FIELD' ? '' : ' &amp; ' + verb) + '</label>'));
     return;
   }
   if (PN.type === 'FIELD') { pnStepField(cancel); return; }
