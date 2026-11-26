@@ -2468,7 +2468,7 @@ function v(id) { var e = document.getElementById(id); return e ? (e.type === 'ch
 function fd(s) { return s ? String(s).split('-').reverse().join('/') : ''; }
 function main(h) {
   var m = $('#main'); if (!m) return;
-  m.innerHTML = h;
+  m.innerHTML = h; if (h.indexOf('class="sk') < 0) clearTimeout(S.lt);
   if (S.anim && h.indexOf('class="sk') < 0) {
     S.anim = false; m.classList.remove('pgin'); void m.offsetWidth; m.classList.add('pgin'); countUp(m);
   }
@@ -2521,7 +2521,10 @@ document.addEventListener('click', function (e) {
 var moT = 0;
 new MutationObserver(function () {
   if (moT) return;
-  moT = requestAnimationFrame(function () { moT = 0; labelCells(document); foldBars(document); liveSearch(document); dateFmt(document); });
+  moT = requestAnimationFrame(function () {
+    moT = 0;
+    ['main', 'modal'].forEach(function (id) { var r = document.getElementById(id); if (r) { labelCells(r); foldBars(r); liveSearch(r); dateFmt(r); } });
+  });
 }).observe(document.body, { childList: true, subtree: true });
 function fld(label, html, hint) { return '<label class="l">' + label + '</label>' + html + (hint ? '<div class="hint">' + hint + '</div>' : ''); }
 /* ---------- phone: fold long filter bars ---------- */
@@ -2567,10 +2570,42 @@ function bg(kind, action, payload) { try { call(kind, action, payload).catch(fun
 
 /* ---------- FAST LAYER: instant tabs, instant buttons ---------- */
 var RC = {}, GEN = 0;
+var PC_OK = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|attMonth': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|attList': 1, 'adm|payslipList': 1, 'adm|listUnauthorized': 1 };
+var pcT = 0;
+function pcSave() {
+  clearTimeout(pcT);
+  pcT = setTimeout(function () {
+    try {
+      var o = {};
+      Object.keys(RC).forEach(function (x) {
+        var q = x.split('|');
+        if (PC_OK[q[0] + '|' + q[1]] && RC[x] && RC[x].t) o[x] = RC[x].d;
+      });
+      var s = JSON.stringify({ u: S.role + ':' + (S.user && S.user.id), d: o });
+      if (s.length < 1500000) localStorage.setItem('klc', s); else localStorage.removeItem('klc');
+    } catch (e) { }
+  }, 1500);
+}
+function pcLoad() {
+  try {
+    var st = JSON.parse(localStorage.getItem('klc') || 'null');
+    if (!st || st.u !== S.role + ':' + (S.user && S.user.id)) return;
+    Object.keys(st.d).forEach(function (x) { RC[x] = { d: st.d[x], s: JSON.stringify(st.d[x]), t: 1 }; });
+  } catch (e) { }
+}
+function attRestore() {
+  if (S.role !== 'emp' || !S.user) return;
+  try {
+    var st = JSON.parse(localStorage.getItem('kla2') || 'null'), n = new Date();
+    var td = n.getFullYear() + '-' + ('0' + (n.getMonth() + 1)).slice(-2) + '-' + ('0' + n.getDate()).slice(-2);
+    if (!st || String(st.u) !== String(S.user.id) || !st.d || st.d.date !== td) return;
+    AT.data = st.d; AT.cal = st.d.cal || null; AT.uid = String(S.user.id); AT.off = 0;
+  } catch (e) { }
+}
 var FAST = {};
 var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1,  'adm|attFlags': 1 };
-var SOFT = { 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
-var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|fldOdo': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1 };
+var SOFT = { 'emp|home': 1, 'emp|applications': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
+var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|fldOdo': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1, 'adm|fldVisits': 1, 'adm|fldVisit': 1, 'adm|fldPhoto': 1, 'adm|fldTrips': 1, 'adm|fldReqGet': 1 };
 
 function ckey(k, p) {
   var q = {}, cy = new Date().getFullYear();
@@ -2596,7 +2631,7 @@ function call(kind, action, payload) {
         e.busy = false;
         if (gen !== GEN) return;
         var s2 = JSON.stringify(d), changed = s2 !== e.s;
-        RC[key] = { d: d, s: s2, t: Date.now() };
+        RC[key] = { d: d, s: s2, t: Date.now() }; pcSave();
         if (changed && SOFT[k] && S.page === pg && !(k === 'emp|attMonth' && pg === 'home')) softRender(pg);
       }).catch(function (er) { e.busy = false; if (er && er.code === 'AUTH') signOut(er.message); });
     }
@@ -2605,7 +2640,7 @@ function call(kind, action, payload) {
   return raw(kind, action, payload).then(function (d) {
     if (gen === GEN) {
       var ent = { d: d, s: JSON.stringify(d), t: Date.now() };
-      RC[key] = ent;
+      RC[key] = ent; pcSave();
       if (k === 'adm|bonusList' && d && d.year) RC[ckey(k, { year: d.year })] = ent;
     }
     return d;
@@ -2738,6 +2773,7 @@ document.addEventListener('submit', function (e) {
 window.addEventListener('error', function (e) { toast('Unexpected error: ' + e.message, true); });
 /* ======== MOBILE UI v3 ======== */
 function countUp(root) {
+  return; // disabled for speed: numbers appear instantly
   $$('.dk b,.stat b,.mw-sum b', root).forEach(function (el) {
     var t = el.textContent.trim();
     if (!/^\d+(\.\d+)?$/.test(t) || !el.firstChild) return;
@@ -3100,8 +3136,7 @@ function pnStepField(cancel) {
   else if (!PN.pos) w = '<div class="msg e"><b>Location not available, try again.</b> The selfie is not saved without your location. Turn on GPS, allow location and tap "Try location again".</div>';
   else {
     ok = true;
-    w = PN.pos.acc <= LOC_GOOD ? '<div class="msg o"><b>Accurate location</b> (&plusmn;' + PN.pos.acc + ' m)</div>'
-      : '<div class="msg w"><b>Approximate location (' + PN.pos.acc + ' m)</b></div>';
+    w = '<div class="msg o"><b>Location captured</b> (&plusmn;' + PN.pos.acc + ' m)</div>';
   }
   if (warnEl) warnEl.innerHTML = w;
   pnFoot(cancel + (PN.locating ? '' : '<button class="btn gr" data-a="pnRetake">Retake</button>') +
@@ -3389,6 +3424,7 @@ function signOut(msg) {
   S.token = null; S.fieldOn = false; FLD.actor = ''; FLD.picked = false; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
   try { localStorage.removeItem('kl'); } catch (e) { }
   try { sessionStorage.removeItem('kl'); } catch (e) { }
+  try { localStorage.removeItem('klc'); localStorage.removeItem('kla2'); } catch (e) { }
   closeModal(); S.view = 'login'; S.otp = false; login(msg);
 }
 var loggingOut = false;
@@ -3403,7 +3439,7 @@ H.logout = function (d, b) {
 };
 function begin(role, r) {
   RC = {}; GEN++; S.warmed = false;
-  S.role = role; S.token = r.token; S.user = role === 'emp' ? r.user : r.admin; S.cfg = r.config || {}; save(); shell();
+  S.role = role; S.token = r.token; S.user = role === 'emp' ? r.user : r.admin; S.cfg = r.config || {}; save(); pcLoad(); attRestore(); shell();
   if (role === 'adm') A('listEmployees').then(function (l) { S.emps = l; }).catch(function () { });
   H.go({ p: role === 'emp' ? 'home' : 'dash' });
 }
@@ -3540,7 +3576,7 @@ function navApply(force) {
   });
 }
 H.navgrp = function (d) { S.navOpen = S.navOpen || {}; S.navOpen[d.g] = !S.navOpen[d.g]; navApply(false); };
-var AN = [['dash', 'Dashboard', '&#9632;'], ['aatt', 'Attendance', '&#10003;'], ['leave', 'Leave', '&#9998;', [['aapps', 'Applications'], ['manual', 'Manual Leave Entry'], ['una', 'Unauthorized Leave'], ['bal', 'Balances & Ledger']]], ['emps', 'Employees', '&#9787;'], ['payg', 'Payments', '&#8377;', [['pay', 'Payslips'], ['sstmt', 'Salary statement'], ['adv', 'Advances']]],
+var AN = [['dash', 'Dashboard', '&#9632;'], ['aatt', 'Attendance', '&#10003;'], ['leave', 'Leave', '&#9998;', [['aapps', 'Applications'], ['manual', 'Manual Leave Entry'], ['una', 'Unauthorized Leave'], ['bal', 'Balances & Ledger']]], ['emps', 'Employees', '&#9787;'], ['fvis', 'Field Visits', '&#9873;'], ['payg', 'Payments', '&#8377;', [['pay', 'Payslips'], ['sstmt', 'Salary statement'], ['adv', 'Advances']]],
   ['bonus', 'Diwali Bonus', '&#9733;'], ['ahol', 'Public Holidays', '&#9728;'], ['|'], ['set', 'Settings', '&#9881;'], ['admins', 'Administrators', '&#9823;'], ['log', 'System Log', '&#9783;'], ['pwd', 'Change Password', '&#9919;']];
 var BI = {
   pay: '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5"/><path d="M9 16h2.5a2 2 0 0 0 0-4"/></svg>',
@@ -3596,7 +3632,7 @@ H.go = function (d) {
   var prev = S.page;
   if (!d.pop && prev !== d.p) { if (prev == null) { try { history.replaceState({ p: d.p }, ''); } catch (e) { } } else hpush({ p: d.p }); }
   S.page = d.p; $$('#nav a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-p') === d.p); }); navApply(true); bnavSync(d.p); fabSync(d.p); fieldFabSync(d.p); S.anim = true; var n = $('#nav'); if (n) n.classList.remove('open');
-  loader(); Promise.resolve().then(function () { return PG[d.p](); }).then(function () { if (!S.warmed && S.role) { S.warmed = true; setTimeout(warm, 600); } }).catch(function (e) { if (e.code === 'AUTH') signOut(e.message); else if (S.page === d.p) main('<div class="msg e">' + esc(e.message) + '</div>'); });
+  clearTimeout(S.lt); S.lt = setTimeout(loader, 150); if (!d.pop) window.scrollTo(0, 0); Promise.resolve().then(function () { return PG[d.p](); }).then(function () { if (!S.warmed && S.role) { S.warmed = true; setTimeout(warm, 600); } }).catch(function (e) { if (e.code === 'AUTH') signOut(e.message); else if (S.page === d.p) main('<div class="msg e">' + esc(e.message) + '</div>'); });
 };
 function reload() { H.go({ p: S.page }); }
 /* ---------- month + year picker (used by every month switcher) ---------- */
@@ -3794,6 +3830,7 @@ function attLoad(quiet) {
   if (!quiet) box.innerHTML = '<div class="card at"><div class="ld">Loading attendance...</div></div>';
   return E('attToday').then(function (d) {
     AT.data = d; AT.off = d.serverNow - Date.now(); AT.uid = S.user ? String(S.user.id) : '';
+    try { localStorage.setItem('kla2', JSON.stringify({ u: S.user && S.user.id, d: d })); } catch (e) { }
     if (d.cal) AT.cal = d.cal; else if (!CAL.data) attCalLoad('');
     var b = $('#attCard'); if (!b || S.page !== 'home') return;
     if (d.cal && (!CAL.month || CAL.month === d.cal.month)) { CAL.data = d.cal; CAL.month = d.cal.month; calSelFix(d.cal); calRender(); }
@@ -4914,6 +4951,19 @@ H.atOpen = function (d) {
     modal('Attendance - ' + r.emp.name, body, foot);
     if (x.hasInPhoto) atAdminPhoto(r.emp.id, r.date, 'IN');
     if (x.hasOutPhoto) atAdminPhoto(r.emp.id, r.date, 'OUT');
+    if (pioEmp && pioEmp.fieldStaff) {
+      A('fldTrips', { from: r.date, to: r.date, empId: r.emp.id }).then(function (t) {
+        var mb = $('#modal .mb');
+        if (!mb || ADL.cur !== r) return;
+        var rows = (t.list || []).filter(function (x) { return x.start || x.end; });
+        if (!rows.length) return;
+        mb.insertAdjacentHTML('beforeend', '<div class="sec"><h3>Odometer (Field Staff)</h3>' + rows.map(function (x) {
+          return '<div class="kv cal-kv"><b>Start</b><span>' + (x.start ? esc(x.start.km) + ' km &middot; ' + esc(x.start.time) : '-') + '</span>' +
+            '<b>End</b><span>' + (x.end ? esc(x.end.km) + ' km &middot; ' + esc(x.end.time) : '<span class="at-chip warn">Not entered</span>') + '</span>' +
+            '<b>Distance</b><span><b>' + (x.distance == null ? '-' : x.distance + ' km') + '</b></span></div>';
+        }).join('') + '<div class="hint">Photos: Field Visits &gt; Trips.</div></div>');
+      }).catch(function () { });
+    }
   }).catch(function (e) { closeModal(); if (e.code === 'AUTH') signOut(e.message); else toast(e.message, true); });
 };
 H.atSetPunch = function (d, b) {
@@ -6087,6 +6137,132 @@ PG.spadv = function () {
 H.spAdv2 = function () {
   advForm((S.spAdvEmps || []).map(function (e) { return [e.id, e.name + ' (' + e.id + ')']; }), 'emp');
 };
+/* ======================= ADMIN: FIELD VISITS ======================= */
+var FA = { tab: 'v', f: {}, t: {}, last: null };
+function faTabs() {
+  return '<div class="chips">' + [['v', 'Visits'], ['t', 'Trips'], ['r', 'Required fields']].map(function (x) {
+    return '<a class="chp' + (FA.tab === x[0] ? ' on' : '') + '" data-a="faTab" data-t="' + x[0] + '">' + x[1] + '</a>';
+  }).join('') + '</div>';
+}
+H.faTab = function (d) { FA.tab = d.t; reload(); };
+PG.fvis = function () { return FA.tab === 't' ? faTrips() : FA.tab === 'r' ? faReq() : faVisits(); };
+function faStaffOpts(list, sel) { return opts(list.map(function (s) { return [s.id, s.name]; }), sel, 'All'); }
+
+function faVisits() {
+  return A('fldVisits', FA.f).then(function (d) {
+    FA.last = d; FA.f.from = d.from; FA.f.to = d.to;
+    var f = FA.f, t = d.totals;
+    var rows = d.list.map(function (x) {
+      return '<tr><td>' + esc(x.dateText) + '<div class="hint">' + esc(x.time) + '</div></td><td><b>' + esc(x.customer || '-') + '</b><div class="hint">' + esc(x.contact) + (x.phone ? ' &middot; ' + esc(x.phone) : '') + '</div></td>' +
+        '<td>' + esc(x.names.join(', ')) + '</td><td>' + esc(x.purpose || '-') + '</td><td>' + esc(x.interest || '-') + '</td>' +
+        '<td class="num">' + (x.orderSize == null ? '-' : x.orderSize) + '</td><td class="num">' + (x.amount == null ? '-' : x.amount) + '</td>' +
+        '<td><button class="btn sm" data-a="faOpen" data-id="' + esc(x.id) + '">Open</button></td></tr>';
+    });
+    main('<h2>Field Visits</h2>' + faTabs() + '<div class="card"><div class="bar">' +
+      '<div>' + fld('From', '<input type="date" id="fa_from" value="' + esc(d.from) + '">') + '</div>' +
+      '<div>' + fld('To', '<input type="date" id="fa_to" value="' + esc(d.to) + '">') + '</div>' +
+      '<div>' + fld('Employee', '<select id="fa_emp">' + faStaffOpts(d.staff, f.empId) + '</select>') + '</div>' +
+      '<div>' + fld('Purpose', '<select id="fa_pur">' + opts(d.options.purpose.map(function (x) { return [x, x]; }), f.purpose, 'All') + '</select>') + '</div>' +
+      '<div>' + fld('Interest', '<select id="fa_int">' + opts(d.options.interest.map(function (x) { return [x, x]; }), f.interest, 'All') + '</select>') + '</div>' +
+      '<div>' + fld('Search', '<input type="text" id="fa_q" value="' + esc(f.q || '') + '" placeholder="Customer, phone, product">') + '</div>' +
+      '<div><button class="btn" data-a="faGo">Search</button> <button class="btn gr" data-a="faReset">Reset</button></div></div>' +
+      '<div class="bl-top"><div><span>Visits</span><b>' + t.count + '</b></div><div><span>HOT leads</span><b>' + t.hot + '</b></div><div><span>Expected orders (Rs)</span><b>' + inrF(t.order) + '</b></div><div><span>Collected (Rs)</span><b>' + inrF(t.amount) + '</b></div></div>' +
+      '<p><button class="btn gr" data-a="faCsv">Download CSV</button></p>' +
+      tbl(['Date', 'Customer', 'Staff', 'Purpose', 'Interest', 'Expected order', 'Collected', ''], rows, 'No visits in this period.', true) +
+      (d.more ? '<div class="hint">Showing the latest 500. Narrow the filters to see the rest.</div>' : '') + '</div>');
+  });
+}
+H.faGo = function () { FA.f = { from: v('fa_from'), to: v('fa_to'), empId: v('fa_emp'), purpose: v('fa_pur'), interest: v('fa_int'), q: v('fa_q') }; reload(); };
+H.faReset = function () { FA.f = {}; reload(); };
+H.faCsv = function () {
+  var d = FA.last; if (!d) return;
+  function q(s) { s = String(s == null ? '' : s); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; }
+  var head = ['Date', 'Time', 'Customer', 'Contact', 'Designation', 'Phone', 'Email', 'Address', 'Customer type', 'Purpose', 'Product', 'Discussion', 'Interest', 'Timeline', 'Expected order', 'Next action', 'Amount collected', 'Staff'];
+  var lines = [head.map(q).join(',')];
+  d.list.forEach(function (x) {
+    lines.push([x.dateText, x.time, x.customer, x.contact, x.designation, x.phone, x.email, x.address, x.ctype, x.purpose, x.product, x.discussion, x.interest, x.timeline, x.orderSize, x.nextAction, x.amount, x.names.join(', ')].map(q).join(','));
+  });
+  saveFile('field-visits-' + d.from + '-to-' + d.to + '.csv', 'text/csv', btoa(unescape(encodeURIComponent('\ufeff' + lines.join('\r\n')))));
+};
+function faPhoto(id, boxId) {
+  if (!id) return;
+  var key = 'FA' + id;
+  function put(u) { var e = document.getElementById(boxId); if (e) e.innerHTML = u ? '<img alt="Photo" src="' + u + '" data-a="atBig" data-k="' + key + '">' : '&ndash;'; }
+  if (AT.ph[key]) { put(AT.ph[key]); return; }
+  A('fldPhoto', { id: id }).then(function (r) { AT.ph[key] = 'data:' + r.mime + ';base64,' + r.data; put(AT.ph[key]); }).catch(function () { put(''); });
+}
+H.faOpen = function (d) {
+  modalLoading('Visit');
+  A('fldVisit', { id: d.id }).then(function (r) {
+    var x = r.visit, s = r.selfie, inr = function (n) { return n == null ? '' : 'Rs ' + inrF(n); };
+    var rowsKv = [['Date and time', x.dateText + ', ' + x.time], ['Recorded by', x.by], ['Staff on visit', x.names.join(', ')], ['Customer', x.customer], ['Contact person', x.contact],
+      ['Designation', x.designation], ['Phone', x.phone], ['Email', x.email], ['Address', x.address], ['Customer type', x.ctype], ['Purpose', x.purpose],
+      ['Amount collected', inr(x.amount)], ['Product', x.product], ['Discussion', x.discussion], ['Interest', x.interest], ['Timeline', x.timeline],
+      ['Expected order', inr(x.orderSize)], ['Next action', x.nextAction]];
+    var body = '<div class="cal-ps">' + (s && s.hasPhoto ? '<div class="cal-p"><div class="at-th cal-th" id="faS"><span class="spin"></span></div><small>Selfie</small></div>' : '') +
+      (r.cardId ? '<div class="cal-p"><div class="at-th cal-th" id="faC"><span class="spin"></span></div><small>Card</small></div>' : '') +
+      (r.reqId ? '<div class="cal-p"><div class="at-th cal-th" id="faR"><span class="spin"></span></div><small>Requirement</small></div>' : '') + '</div>' +
+      (s ? '<div class="kv cal-kv"><b>Selfie location</b><span><span class="at-chip ' + (s.good ? 'ok' : 'warn') + '">' + esc(s.label) + '</span></span></div>' + (s.lat != null ? mapLinks([['Selfie', s.lat, s.lng]]) : '') : '') +
+      '<div class="kv" style="margin-top:12px">' + rowsKv.map(function (k) { return k[1] ? '<b>' + esc(k[0]) + '</b><span style="white-space:pre-wrap">' + esc(k[1]) + '</span>' : ''; }).join('') + '</div>';
+    modal('Visit - ' + (x.customer || x.id), body, '<button class="btn gr" data-a="mclose">Close</button>');
+    if (s && s.hasPhoto) faPhoto(s.id, 'faS');
+    faPhoto(r.cardId, 'faC'); faPhoto(r.reqId, 'faR');
+  }).catch(function (e) { closeModal(); if (e.code === 'AUTH') signOut(e.message); else toast(e.message, true); });
+};
+
+function faTrips() {
+  return A('fldTrips', FA.t).then(function (d) {
+    FA.t.from = d.from; FA.t.to = d.to;
+    var rows = d.list.map(function (x) {
+      return '<tr><td>' + esc(fd(x.date)) + '</td><td><b>' + esc(x.name) + '</b><div class="hint">' + esc(x.empId) + '</div></td>' +
+        '<td class="num">' + (x.start ? x.start.km + '<div class="hint">' + esc(x.start.time) + '</div>' : '-') + '</td>' +
+        '<td class="num">' + (x.end ? x.end.km + '<div class="hint">' + esc(x.end.time) + '</div>' : '-') + '</td>' +
+        '<td class="num"><b>' + (x.distance == null ? '-' : x.distance + ' km') + '</b></td>' +
+        '<td class="num">' + x.saved + '</td><td class="num">' + (x.pending ? '<span class="at-chip bad">' + x.pending + '</span>' : 0) + '</td>' +
+        '<td>' + esc(x.state) + '</td><td>' + (x.start ? '<button class="ep-b" data-a="faOdo" data-id="' + esc(x.start.id) + '" data-km="' + esc(x.start.km) + '" data-t="Start">Start photo</button>' : '') +
+        (x.end ? ' <button class="ep-b" data-a="faOdo" data-id="' + esc(x.end.id) + '" data-km="' + esc(x.end.km) + '" data-t="End">End photo</button>' : '') + '</td></tr>';
+    });
+    main('<h2>Field Visits</h2>' + faTabs() + '<div class="card"><div class="bar">' +
+      '<div>' + fld('From', '<input type="date" id="ft_from" value="' + esc(d.from) + '">') + '</div>' +
+      '<div>' + fld('To', '<input type="date" id="ft_to" value="' + esc(d.to) + '">') + '</div>' +
+      '<div>' + fld('Employee', '<select id="ft_emp">' + faStaffOpts(d.staff, FA.t.empId) + '</select>') + '</div>' +
+      '<div><button class="btn" data-a="faTGo">Search</button></div></div>' +
+      '<div class="bl-top" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><span>Trips</span><b>' + d.list.length + '</b></div><div><span>Total distance</span><b>' + inrF(d.totalKm) + ' km</b></div></div>' +
+      '<h3 style="margin:14px 0 6px">Distance travelled by employee</h3>' +
+      tbl(['Employee', 'Completed trips', 'Total km'], (d.summary || []).map(function (s) {
+        return '<tr><td><b>' + esc(s.name) + '</b><div class="hint">' + esc(s.empId) + '</div></td><td class="num">' + s.trips + '</td><td class="num"><b>' + inrF(s.km) + ' km</b></td></tr>';
+      }), 'No completed trips in this period.', true) +
+      '<h3 style="margin:14px 0 6px">Trips by day</h3>' +
+      tbl(['Date', 'Employee', 'Start km', 'End km', 'Distance', 'Forms saved', 'Forms pending', 'Trip', ''], rows, 'No field activity in this period.', true) + '</div>');
+  });
+}
+H.faTGo = function () { FA.t = { from: v('ft_from'), to: v('ft_to'), empId: v('ft_emp') }; reload(); };
+H.faOdo = function (d) {
+  modal('Odometer ' + (d.t || '') + (d.km ? ' - ' + d.km + ' km' : ''),
+    '<div class="kv cal-kv"><b>Reading</b><span><b>' + esc(d.km || '-') + ' km</b></span></div>' +
+    '<div class="cal-ps"><div class="at-th cal-th fs-big" id="faO"><span class="spin"></span></div></div>',
+    '<button class="btn gr" data-a="mclose">Close</button>');
+  faPhoto(d.id, 'faO');
+};
+
+function faReq() {
+  return A('fldReqGet').then(function (d) {
+    var rows = d.fields.map(function (f) {
+      return '<label class="hb" style="padding:10px 0;border-top:1px solid var(--line)"><input type="checkbox" class="faRq" value="' + esc(f[0]) + '"' + (d.required[f[0]] ? ' checked' : '') + '> <span><b>' + esc(f[1]) + '</b>' +
+        (f[0] === 'amount' ? ' <small class="hint">(only when Purpose = Payment collection)</small>' : '') + '</span></label>';
+    }).join('');
+    main('<h2>Field Visits</h2>' + faTabs() + '<div class="card" style="max-width:640px"><div class="msg i">Ticked fields must be filled before an employee can save a visit form. The server enforces this, not just the screen.</div>' +
+      '<label class="hb"><input type="checkbox" data-ch="faRqAll"> <b>Select all</b></label>' + rows +
+      '<p style="margin-top:14px"><button class="btn" data-a="faReqSave">Save required fields</button></p>' +
+      '<div class="hint">Visit history days are in Settings &gt; Field Staff.</div></div>');
+  });
+}
+CHG.faRqAll = function (el) { $$('.faRq').forEach(function (c) { c.checked = el.checked; }); };
+H.faReqSave = function (d, b) {
+  var keys = $$('.faRq:checked').map(function (c) { return c.value; });
+  run(b, function () { return A('fldReqSave', { required: keys }).then(function (r) { toast(r.message); reload(); }); });
+};
+
 /* ---------- boot ---------- */
 setTimeout(function () {   // decorative font loads after the page is already visible
   try { var fl = document.createElement('link'); fl.rel = 'stylesheet'; fl.href = 'https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap'; document.head.appendChild(fl); } catch (e) { }
@@ -6094,7 +6270,7 @@ setTimeout(function () {   // decorative font loads after the page is already vi
 (function () {
   var st = null; try { st = JSON.parse(localStorage.getItem('kl') || sessionStorage.getItem('kl') || 'null'); } catch (e) { }
   if (st && st.token && st.role) {
-    S.role = st.role; S.token = st.token; S.user = st.user; S.cfg = st.cfg || {}; $('#boot').style.display = 'none'; shell();
+    S.role = st.role; S.token = st.token; S.user = st.user; S.cfg = st.cfg || {}; pcLoad(); attRestore(); $('#boot').style.display = 'none'; shell();
     if (S.role === 'adm') A('listEmployees').then(function (l) { S.emps = l; }).catch(function () { });
     H.go({ p: S.role === 'emp' ? 'home' : 'dash' });
 
