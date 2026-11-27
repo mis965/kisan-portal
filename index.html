@@ -2472,7 +2472,7 @@ body:has(.ov) #fldFab{display:none}
 .vf-e{position:absolute;left:0;right:0;top:50%;margin-top:-70px;text-align:center}
 .vf-e span{display:inline-block;font-size:130px;line-height:1}
 .vf-s{position:absolute;left:50%;top:calc(50% + 90px);width:110px;height:14px;margin-left:-55px;border-radius:50%;background:rgba(0,0,0,.3)}
-.vf-x{position:absolute;right:12px;top:calc(14px + env(safe-area-inset-top));background:none;border:0;font-size:30px;line-height:1;color:#fff}
+.vf-x{display:none}
 .vf-bar{position:absolute;left:0;bottom:0;height:5px;width:100%;background:currentColor;transform-origin:left}
 .lite .vf{animation:vfin .45s ease-out both!important}
 .lite .vf.out{animation:vfout .3s ease-in both!important}
@@ -2550,7 +2550,7 @@ function loader() {
   main('<div class="sk sk-t"></div><div class="sk-r"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div><div class="sk sk-c"></div><div class="sk sk-c"></div><div class="sk sk-c"></div>');
 }
 function badge(s) { return '<span class="badge b-' + esc(s) + '">' + esc(s) + '</span>'; }
-function toast(m, bad) { var d = document.createElement('div'); d.className = 'tst' + (bad ? ' bad' : ''); d.textContent = m; $('#toast').appendChild(d); setTimeout(function () { d.remove(); }, bad ? 6500 : 3500); }
+function toast(m, bad) { var d = document.createElement('div'); d.className = 'tst' + (bad ? ' bad' : ''); d.textContent = m; d.style.cursor = 'pointer'; d.onclick = function () { d.remove(); }; $('#toast').appendChild(d); setTimeout(function () { d.remove(); }, bad ? 6500 : 3500); }
 function opts(list, sel, blank) { var h = blank ? '<option value="">' + esc(blank) + '</option>' : ''; list.forEach(function (o) { var val = o[0], lab = o[1]; h += '<option value="' + esc(val) + '"' + (String(val) === String(sel) ? ' selected' : '') + '>' + esc(lab) + '</option>'; }); return h; }
 function empOpts(sel, blank, onlyActive) { return opts(S.emps.filter(function (e) { return !onlyActive || e.status === 'Active'; }).map(function (e) { return [e.id, e.name + ' (' + e.id + ')']; }), sel, blank); }
 function typeOpts(sel, blank) { return opts([['CL', 'Casual Leave'], ['SL', 'Sick Leave'], ['OTHER', 'Other Leave']], sel, blank); }
