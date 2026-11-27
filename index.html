@@ -2419,6 +2419,18 @@ body:has(.ov) #fldFab{display:none}
 .fs-s .btn,.fs-s .ep-b{flex-shrink:0}
 .at-th.fs-big{width:100%;height:260px}
 .at-th.fs-big img{object-fit:contain;background:#000}
+/* ===== LATE PUNCH FLOATING POP-UP ===== */
+.vp{position:fixed;left:12px;right:12px;top:calc(62px + env(safe-area-inset-top));max-width:460px;margin:0 auto;z-index:120;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;border:1px solid;box-shadow:0 10px 28px rgba(0,0,0,.25);animation:vpin .35s cubic-bezier(.2,.9,.3,1.2) both;cursor:pointer}
+.vp.out{opacity:0;transform:translateY(-14px);transition:all .3s}
+.vp-i{font-size:28px;line-height:1}
+.vp-t{flex:1;min-width:0}
+.vp-t b{display:block;font-size:13px}
+.vp-t span{display:block;font-size:13px;line-height:1.45;margin-top:2px;color:#1f2d3a}
+.vp-x{background:none;border:0;font-size:20px;line-height:1;color:#667788;padding:0}
+.vp-late{background:#fff3d6;border-color:#e0a100}.vp-late b{color:#a86a00}
+.vp-short{background:#fdeaea;border-color:#e08a82}.vp-short b{color:#c0392b}
+.vp-great{background:#e4f5ea;border-color:#7fcf9f}.vp-great b{color:#1b8a4b}
+@keyframes vpin{from{opacity:0;transform:translateY(-24px) scale(.95)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body data-company="Kisan Enterprises">
@@ -3763,11 +3775,22 @@ function attPunchRow(label, time, dist, flag, hasPhoto, type, none) {
   var body = time ? '<b class="at-t">' + esc(time) + '</b>' + attChip(dist, flag) : '<span class="at-no">' + esc(none) + '</span>';
   return '<div class="at-p"><div class="at-th" id="atph' + type + '">' + (hasPhoto ? '<span class="spin"></span>' : '&ndash;') + '</div><div class="at-pi"><small>' + label + '</small>' + body + '</div></div>';
 }
+function vibePop(list, type) {
+  (list || []).filter(function (x) { return type === 'OUT' ? x.tone !== 'late' : x.tone === 'late'; }).forEach(function (x, i) {
+    setTimeout(function () {
+      var ic = { late: '😭', short: '😬', great: '🔥' }[x.tone];
+      var tt = { late: 'Late punch', short: 'Short day', great: 'Great work' }[x.tone];
+      var d = document.createElement('div');
+      d.className = 'vp vp-' + x.tone;
+      d.innerHTML = '<div class="vp-i">' + ic + '</div><div class="vp-t"><b>' + tt + '</b><span>' + esc(x.text) + '</span></div><button class="vp-x" aria-label="Close">&times;</button>';
+      d.onclick = function () { d.remove(); };
+      document.body.appendChild(d);
+      setTimeout(function () { d.classList.add('out'); setTimeout(function () { d.remove(); }, 300); }, 7000);
+    }, i * 400);
+  });
+}
 function lateVibeHtml(d) {
   var h = '', L = d.late;
-  (d.vibe || []).forEach(function (x) {
-    h += '<div class="msg ' + (x.tone === 'great' ? 'o' : x.tone === 'short' ? 'e' : 'w') + '" style="margin:10px 14px 0;font-weight:600">' + esc(x.text) + '</div>';
-  });
   if (L && L.on && d.canIn) {
     if (L.perm === 'PENDING') h += '<div class="msg i" style="margin:10px 14px 0">Your late punch request is with Admin. Hang tight ⏳</div>';
     else if (L.perm === 'ALLOWED') h += '<div class="msg o" style="margin:10px 14px 0">Admin allowed you. You can punch in now ✅</div>';
@@ -4187,7 +4210,7 @@ p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc;
     var pre = fo ? E('fldOdo', { type: PN.type === 'IN' ? 'START' : 'END', km: km, photo: { data: PN.odoPhoto.split(',')[1] },
       requestId: PN.req + 'O', lat: L.lat, lng: L.lng, accuracy: L.acc }) : Promise.resolve();
     return pre.then(function () { return E('attPunch', p); })
-      .then(function (r) { toast(r.message); (r.vibe || []).forEach(function (x) { toast(x.text, x.tone === 'short'); }); closeModal(); attLoad(true); });
+      .then(function (r) { toast(r.message); vibePop(r.vibe, p.type); closeModal(); attLoad(true); });
   }, 'Saving...').then(function () { if (PN) PN.busy = false; });
 };
 /* ---------- attendance calendar ---------- */
