@@ -2605,7 +2605,7 @@ function attRestore() {
 var FAST = {};
 var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1,  'adm|attFlags': 1 };
 var SOFT = { 'emp|home': 1, 'emp|applications': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
-var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|fldOdo': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1, 'adm|fldVisits': 1, 'adm|fldVisit': 1, 'adm|fldPhoto': 1, 'adm|fldTrips': 1, 'adm|fldReqGet': 1 };
+var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|fldOdo': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1, 'adm|fldVisits': 1, 'adm|fldVisit': 1, 'adm|fldPhoto': 1, 'adm|fldTrips': 1, 'adm|fldReqGet': 1, 'adm|lateList': 1 };
 
 function ckey(k, p) {
   var q = {}, cy = new Date().getFullYear();
@@ -2979,10 +2979,10 @@ function fldDraw() {
     tripBy +
     '<div class="fs-steps">' + s1 + s3 + '</div>' +
     '<div class="pk-notes"><div class="hint">Photo, time and location are recorded and can be seen by Admin.</div></div></div>' +
-    '<div class="card mw"><h3>Selfie &amp; visit form</h3>' +
-    '<div class="hint" style="margin:-6px 0 10px">Separate from the odometer. Take a selfie at each customer site, then fill the visit form.</div>' +
+'<div class="card mw"><h3>Form filling (selfie required)</h3>' +
+'<div class="hint" style="margin:-6px 0 10px">Separate from the odometer. At each customer site, tap Start form, take a selfie, then fill the visit form.</div>' +
     '<div class="msg ' + (pend ? 'w' : 'i') + '" style="margin:0 0 10px">' + saved + ' visit form(s) saved' + (pend ? ', ' + pend + ' pending. Open them below.' : '.') + '</div>' +
-    '<button class="btn ok" style="width:100%" data-a="fldSelfie">Take selfie</button></div>' +
+    '<button class="btn ok" style="width:100%" data-a="fldSelfie">Start form</button></div>' +
     '<div class="card mw"><h3>Today\'s field visits</h3><div id="fldList">' + fldRowsHtml() + '</div></div>' +
     '<div class="card mw"><h3>My visits (last 14 days)</h3><div id="fldVis">' + fldVisRows() + '</div></div>');
 }
@@ -3763,6 +3763,30 @@ function attPunchRow(label, time, dist, flag, hasPhoto, type, none) {
   var body = time ? '<b class="at-t">' + esc(time) + '</b>' + attChip(dist, flag) : '<span class="at-no">' + esc(none) + '</span>';
   return '<div class="at-p"><div class="at-th" id="atph' + type + '">' + (hasPhoto ? '<span class="spin"></span>' : '&ndash;') + '</div><div class="at-pi"><small>' + label + '</small>' + body + '</div></div>';
 }
+function lateVibeHtml(d) {
+  var h = '', L = d.late;
+  (d.vibe || []).forEach(function (x) {
+    h += '<div class="msg ' + (x.tone === 'great' ? 'o' : x.tone === 'short' ? 'e' : 'w') + '" style="margin:10px 14px 0;font-weight:600">' + esc(x.text) + '</div>';
+  });
+  if (L && L.on && d.canIn) {
+    if (L.perm === 'PENDING') h += '<div class="msg i" style="margin:10px 14px 0">Your late punch request is with Admin. Hang tight ⏳</div>';
+    else if (L.perm === 'ALLOWED') h += '<div class="msg o" style="margin:10px 14px 0">Admin allowed you. You can punch in now ✅</div>';
+    else if (L.perm === 'REJECTED') h += '<div class="msg e" style="margin:10px 14px 0">Admin did not allow a late punch today.' + (L.remarks ? ' Reason: ' + esc(L.remarks) : '') + '</div>';
+    else h += '<div class="hint" style="margin:10px 16px 0">Punch in by ' + esc(L.cutoff) + '. Free late punches left this month: <b>' + L.freeLeft + '</b></div>';
+  }
+  return h;
+}
+function lateAskOpen() {
+  var L = AT.data.late;
+  modal('Late punch-in', '<div class="msg w">It is past ' + esc(L.cutoff) + ' and you have used all ' + L.free + ' free late punches this month. Ask Admin to allow today\'s punch-in.</div>' +
+    fld('Why are you late?', '<textarea id="lrs" rows="3" maxlength="300"></textarea>'),
+    '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn ok" data-a="lateAsk">Send to Admin</button>');
+}
+H.lateAsk = function (d, b) {
+  var why = v('lrs').trim();
+  if (why.length < 3) { toast('Please write the reason.', true); return; }
+  run(b, function () { return E('lateAsk', { reason: why }).then(function (r) { closeModal(); toast(r.message); }); }, 'Sending...').then(function () { attLoad(true); });
+};
 function attCardHtml(d) {
   var t = d.today, s = d.summary;
   var mode = d.canIn ? 'in' : d.canOut ? 'out' : 'done';
@@ -3798,7 +3822,7 @@ function attCardHtml(d) {
     '<div class="pk-mid"><div class="pk-c">' + timerHtml + '<span class="pk-state">' + state + '</span></div>' + btn + '</div></div>' +
     '<div class="pk-tiles">' + tile('in', 'Punch in', t.inTime, t.inDist, t.inFlag, t.hasInPhoto, 'Not yet') +
     tile('out', 'Punch out', t.outTime, t.outDist, t.outFlag, t.hasOutPhoto, d.pio ? 'Not required' : (t.inTime ? 'Pending' : 'Not yet')) + '</div>' +
-    st + (notes ? '<div class="pk-notes">' + notes + '</div>' : '') +
+    st + lateVibeHtml(d) + (notes ? '<div class="pk-notes">' + notes + '</div>' : '') +
     '<div class="pk-mon"><div class="pk-mon-h"><b>' + esc(d.monthLabel) + '</b><span>' + s.percent + '% attendance</span></div>' +
     '<div class="pc-bar"><i style="width:' + Math.max(0, Math.min(100, s.percent)) + '%"></i></div>' +
     '<div class="at-tiles"><div class="at-tile p"><span>Present</span><b>' + s.present + '</b></div><div class="at-tile l"><span>On leave</span><b>' + s.onLeave + '</b></div><div class="at-tile a"><span>Absent</span><b>' + s.absent + '</b></div></div></div></div>';
@@ -3910,6 +3934,13 @@ CHG.pnOdo = function (el) {
   r.readAsDataURL(f);
 };
 H.atPunch = function (d) {
+  if (d.t !== 'OUT' && AT.data && AT.data.late && AT.data.late.on) {
+    var L = AT.data.late, tp = new Date(Date.now() + (AT.off || 0)).toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour12: false }).split(':');
+    if (Number(tp[0]) * 60 + Number(tp[1]) > L.cutoffMin && L.freeLeft <= 0 && L.perm !== 'ALLOWED') {
+      if (L.perm === 'PENDING') { toast('Your request is with Admin. Checking for their reply...'); attLoad(true); return; }
+      lateAskOpen(); return;
+    }
+  }
   var type = d.t === 'OUT' ? 'OUT' : 'IN';
   PN = { type: type, stream: null, watch: null, pos: null, locErr: '', photo: null, photoUrl: '', mode: 'live', why: '', step: 'cam', snap: null, chk: null, busy: false, locating: false, locTok: 0, best: null, locStart: 0, locTm: null, locDeadline: 0,
     req: 'P' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10), clock: null };
@@ -4156,7 +4187,7 @@ p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc;
     var pre = fo ? E('fldOdo', { type: PN.type === 'IN' ? 'START' : 'END', km: km, photo: { data: PN.odoPhoto.split(',')[1] },
       requestId: PN.req + 'O', lat: L.lat, lng: L.lng, accuracy: L.acc }) : Promise.resolve();
     return pre.then(function () { return E('attPunch', p); })
-      .then(function (r) { toast(r.message); closeModal(); attLoad(true); });
+      .then(function (r) { toast(r.message); (r.vibe || []).forEach(function (x) { toast(x.text, x.tone === 'short'); }); closeModal(); attLoad(true); });
   }, 'Saving...').then(function () { if (PN) PN.busy = false; });
 };
 /* ---------- attendance calendar ---------- */
@@ -4650,7 +4681,7 @@ PG.dash = function () {
     var hr = new Date().getHours(), gr = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var presentNow = (ac.present || 0) + (ac.approval || 0);   // punched-in days count as present
     var pendAtt = at.pendingTotal || 0, pendLv = d.pending.length, flagged = ac.flagged;
-    bnBadge({ aatt: pendAtt, aapps: pendLv });
+    bnBadge({ aatt: pendAtt + (at.latePending || 0), aapps: pendLv });
 
     /* ---------- ATTENDANCE column ---------- */
     var attRows = at.rows.map(function (x) {
@@ -4793,14 +4824,14 @@ function atS() { S.at = S.at || { tab: 'day', date: '', q: '', st: '', from: '',
 function atTabs() {
   var f = atS();
   var pc = f.pt ? ' (' + f.pt + ')' : '';
-  return '<div class="at-btns subtabs" style="margin:0 0 12px"><button class="btn sm' + (f.tab === 'day' ? '' : ' ghost') + '" data-a="atTab" data-t="day">Daily list</button><button class="btn sm' + (f.tab === 'pend' ? '' : ' ghost') + '" data-a="atTab" data-t="pend">Pending approval' + pc + '</button><button class="btn sm' + (f.tab === 'flag' ? '' : ' ghost') + '" data-a="atTab" data-t="flag">Flagged punches</button><button class="btn sm' + (f.tab === 'reg' ? '' : ' ghost') + '" data-a="atTab" data-t="reg">Monthly register</button></div>';
+  return '<div class="at-btns subtabs" style="margin:0 0 12px"><button class="btn sm' + (f.tab === 'day' ? '' : ' ghost') + '" data-a="atTab" data-t="day">Daily list</button><button class="btn sm' + (f.tab === 'pend' ? '' : ' ghost') + '" data-a="atTab" data-t="pend">Pending approval' + pc + '</button><button class="btn sm' + (f.tab === 'flag' ? '' : ' ghost') + '" data-a="atTab" data-t="flag">Flagged punches</button><button class="btn sm' + (f.tab === 'reg' ? '' : ' ghost') + '" data-a="atTab" data-t="reg">Monthly register</button>' + (f.lo ? '<button class="btn sm' + (f.tab === 'late' ? '' : ' ghost') + '" data-a="atTab" data-t="late">Late requests' + (f.lp ? ' (' + f.lp + ')' : '') + '</button>' : '') + '</div>';
 }
 H.atTab = function (d) { atS().tab = d.t; reload(); };
-PG.aatt = function () { var t = atS().tab; return t === 'flag' ? atFlagLoad() : t === 'pend' ? atPendLoad() : t === 'reg' ? atRegLoad() : atDayLoad(); };
+PG.aatt = function () { var t = atS().tab; return t === 'late' ? atLateLoad() : t === 'flag' ? atFlagLoad() : t === 'pend' ? atPendLoad() : t === 'reg' ? atRegLoad() : atDayLoad(); };
 
 /* ---- daily list ---- */
 function atDayLoad() {
-  return A('attList', { date: atS().date }).then(function (d) { ADL.day = d; atS().date = d.date; atS().pt = d.pendingTotal; atDayRender(); });
+  return A('attList', { date: atS().date }).then(function (d) { ADL.day = d; atS().date = d.date; atS().pt = d.pendingTotal; atS().lp = d.latePending; atS().lo = d.lateOn; atDayRender(); });
 }
 function atShift(ymd, n) {
   var p = ymd.split('-'), d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]) + n);
@@ -4847,6 +4878,33 @@ function atDayRender() {
     '<div class="hint" style="margin:10px 0">Active employees: ' + c.total + ' &middot; Paid holiday: ' + c.holiday + ' &middot; Weekly off: ' + c.weekoff + '</div>' +
     tbl(['Employee', 'Status', 'Punch in', 'Punch out', 'Hours', 'Flags', ''], rows, 'No employees match.', true) + '</div>');
 }
+
+/* ---- late requests ---- */
+function atLateLoad() {
+  return A('lateList').then(function (d) { ADL.late = d; atS().lp = d.pending; atS().lo = d.on; atLateRender(); });
+}
+function atLateRender() {
+  var d = ADL.late; if (!d || S.page !== 'aatt' || atS().tab !== 'late') return;
+  var rows = d.list.map(function (r) {
+    var st = r.status, chip = st === 'PENDING' ? '<span class="at-chip warn">Waiting</span>' : st === 'REJECTED' ? '<span class="at-chip bad">Rejected</span>' :
+      st === 'USED' ? '<span class="at-chip ok">Allowed &amp; punched</span>' : '<span class="at-chip ok">Allowed</span>';
+    return '<tr><td>' + esc(r.dateD) + '<div class="hint">' + esc(r.at) + '</div></td><td><b>' + esc(r.name) + '</b><br><small class="hint">' + esc(r.empId) + '</small></td><td>' + esc(r.reason) + '</td><td>' + chip +
+      (r.remarks ? '<div class="hint">' + esc(r.remarks) + '</div>' : '') + '</td><td>' + (st === 'PENDING'
+        ? '<button class="btn sm ok" data-a="lateYes" data-id="' + esc(r.id) + '">Allow</button> <button class="btn sm bad" data-a="lateNo" data-id="' + esc(r.id) + '">Reject</button>' : '') + '</td></tr>';
+  });
+  main('<h2>Attendance</h2>' + atTabs() + '<div class="card"><div class="hint" style="margin-bottom:10px">Employees who used all free late punches ask here. Allowing lets that employee punch in today only.</div>' +
+    tbl(['Date', 'Employee', 'Reason', 'Status', ''], rows, 'No late requests.', true) + '</div>');
+}
+H.lateYes = function (d, b) { run(b, function () { return A('lateDecide', { id: d.id, allow: true }).then(function (r) { toast(r.message); reload(); }); }); };
+H.lateNo = function (d) {
+  modal('Reject late request', fld('Reason (mandatory)', '<input type="text" id="lnr" maxlength="300">'),
+    '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn bad" data-a="lateNoDo" data-id="' + esc(d.id) + '">Reject</button>', true);
+};
+H.lateNoDo = function (d, b) {
+  var why = v('lnr').trim();
+  if (why.length < 3) { toast('Please enter the reason.', true); return; }
+  run(b, function () { return A('lateDecide', { id: d.id, allow: false, remarks: why }).then(function (r) { closeModal(); toast(r.message); reload(); }); });
+};
 
 /* ---- pending approval ---- */
 function atPendLoad() {
