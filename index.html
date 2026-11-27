@@ -2452,6 +2452,11 @@ body:has(.ov) #fldFab{display:none}
 @keyframes vpwig{0%,100%{transform:rotate(0) scale(1)}25%{transform:rotate(-14deg) scale(1.25)}75%{transform:rotate(14deg) scale(1.25)}}
 @keyframes vpshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px) rotate(-8deg)}40%{transform:translateX(5px) rotate(8deg)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 @keyframes vpbar{to{transform:scaleX(0)}}
+/* ===== EARLY / ON-TIME PUNCH POP-UP ===== */
+.vp-early{background:#e3f0ff;border-color:#2b7bbd;color:#2b7bbd}
+.vp-early b{color:#165a8a}
+.lite .vp-early .vp-i{animation:vplaunch 1.1s ease-in-out .5s 3!important}
+@keyframes vplaunch{0%,100%{transform:translate(0,0) rotate(0) scale(1)}40%{transform:translate(8px,-14px) rotate(-12deg) scale(1.3)}70%{transform:translate(-2px,3px) rotate(4deg) scale(1.05)}}
 @keyframes vpcf{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110px) rotate(360deg);opacity:0}}
 </style>
 </head>
@@ -3798,20 +3803,21 @@ function attPunchRow(label, time, dist, flag, hasPhoto, type, none) {
   return '<div class="at-p"><div class="at-th" id="atph' + type + '">' + (hasPhoto ? '<span class="spin"></span>' : '&ndash;') + '</div><div class="at-pi"><small>' + label + '</small>' + body + '</div></div>';
 }
 function vibePop(list, type) {
-  (list || []).filter(function (x) { return type === 'OUT' ? x.tone !== 'late' : x.tone === 'late'; }).forEach(function (x, i) {
+  (list || []).filter(function (x) { return type === 'OUT' ? (x.tone !== 'late' && x.tone !== 'early') : (x.tone === 'late' || x.tone === 'early'); }).forEach(function (x, i) {
     setTimeout(function () {
-      var ic = { late: '😭', short: '😬', great: '🔥' }[x.tone];
-      var tt = { late: 'Late punch', short: 'Short day', great: 'Great work' }[x.tone];
+      var ic = { late: '😭', short: '😬', great: '🔥', early: '🚀' }[x.tone];
+      var tt = { late: 'Late punch', short: 'Short day', great: 'Great work', early: 'Early bird' }[x.tone];
       var d = document.createElement('div');
       d.className = 'vp vp-' + x.tone;
       var GZ = {
+        early: ['Early bird, big W 🚀', 'Punctual king, no cap', 'Day started right, fr', 'Discipline hits different, fr'],
         late: ['Not you being late 💀', 'Bro really slept in 😭', 'Lowkey late, no cap', 'Bestie, traffic or neend?'],
         short: ['Short day, kinda sus 👀', 'Left early? Bold move', 'Bro, shift ended early'],
         great: ['Absolute W, big boss 🏆', 'You ate, no crumbs', 'Main character energy, fr', 'Slayed the whole shift']
       };
       var gl = GZ[x.tone] || GZ.great, gz = gl[Math.floor(Math.random() * gl.length)];
       var cf = '';
-      if (x.tone === 'great') {
+      if (x.tone === 'great' || x.tone === 'early') {
         ['🎉', '✨', '🎊', '⭐', '✨', '🎉'].forEach(function (c, k) {
           cf += '<span class="vp-cf" style="left:' + (8 + k * 15) + '%;animation-delay:' + (k * 0.12) + 's">' + c + '</span>';
         });
@@ -4235,6 +4241,14 @@ H.pnSend = function (d, b) {
 p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc;
   var km = parseFloat(v('pnKm')), hasKm = isFinite(km) && km >= 0;
   var fo = !!S.fieldOn && (hasKm || !!PN.odoPhoto);   // send odometer only if something was entered
+  var early = false;
+  try {
+    var EL = AT.data && AT.data.late;
+    if (p.type === 'IN' && EL && EL.on && EL.cutoffMin != null) {
+      var tq = new Date(Date.now() + (AT.off || 0)).toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour12: false }).split(':');
+      early = Number(tq[0]) * 60 + Number(tq[1]) <= EL.cutoffMin;
+    }
+  } catch (e) { }
   if (fo) {
     if (!hasKm) { toast('Please enter the odometer reading, or clear the photo.', true); return; }
     if (!PN.odoPhoto) { toast('Please take the odometer photo, or clear the reading.', true); return; }
@@ -4244,7 +4258,11 @@ p.lat = L.lat; p.lng = L.lng; p.accuracy = L.acc;
     var pre = fo ? E('fldOdo', { type: PN.type === 'IN' ? 'START' : 'END', km: km, photo: { data: PN.odoPhoto.split(',')[1] },
       requestId: PN.req + 'O', lat: L.lat, lng: L.lng, accuracy: L.acc }) : Promise.resolve();
     return pre.then(function () { return E('attPunch', p); })
-      .then(function (r) { toast(r.message); vibePop(r.vibe, p.type); closeModal(); attLoad(true); });
+      .then(function (r) {
+        toast(r.message); vibePop(r.vibe, p.type);
+        if (early && !(r.vibe || []).some(function (z) { return z.tone === 'late'; })) vibePop([{ tone: 'early', text: '' }], 'IN');
+        closeModal(); attLoad(true);
+      });
   }, 'Saving...').then(function () { if (PN) PN.busy = false; });
 };
 /* ---------- attendance calendar ---------- */
