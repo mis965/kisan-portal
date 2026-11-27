@@ -2431,6 +2431,28 @@ body:has(.ov) #fldFab{display:none}
 .vp-short{background:#fdeaea;border-color:#e08a82}.vp-short b{color:#c0392b}
 .vp-great{background:#e4f5ea;border-color:#7fcf9f}.vp-great b{color:#1b8a4b}
 @keyframes vpin{from{opacity:0;transform:translateY(-24px) scale(.95)}to{opacity:1;transform:none}}
+/* ===== LATE PUNCH POP-UP: animated + GenZ line ===== */
+.vp{overflow:hidden;border-width:2px}
+.vp-t .vp-g{font-size:18px;font-weight:800;line-height:1.3;color:#1f2d3a;margin:3px 0 0}
+.vp-t .vp-g + span{font-size:12px;color:#667788}
+.vp-i{display:inline-block;transform-origin:center}
+.vp-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:currentColor;transform-origin:left;display:block}
+.vp-late{color:#e0a100}.vp-short{color:#c0392b}.vp-great{color:#1b8a4b}
+.vp-late .vp-t span,.vp-short .vp-t span,.vp-great .vp-t span{color:#1f2d3a}
+.vp-t .vp-g + span{color:#667788!important}
+.vp-cf{position:absolute;top:-6px;font-size:15px;pointer-events:none}
+.lite .vp{animation:vpin2 .7s cubic-bezier(.2,1.3,.3,1) both!important}
+.lite .vp.out{animation:vpout .3s ease-in both!important}
+.lite .vp-i{animation:vpwig 1s ease-in-out .5s 3!important}
+.lite .vp-late .vp-i{animation-name:vpshake!important}
+.lite .vp-bar{animation:vpbar 7s linear both!important}
+.lite .vp-cf{animation:vpcf 1.8s ease-in both!important}
+@keyframes vpin2{0%{opacity:0;transform:translateY(-90px) scale(.8) rotate(-3deg)}60%{opacity:1;transform:translateY(8px) scale(1.04) rotate(1deg)}80%{transform:translateY(-3px) scale(.99)}100%{opacity:1;transform:none}}
+@keyframes vpout{to{opacity:0;transform:translateY(-40px) scale(.9)}}
+@keyframes vpwig{0%,100%{transform:rotate(0) scale(1)}25%{transform:rotate(-14deg) scale(1.25)}75%{transform:rotate(14deg) scale(1.25)}}
+@keyframes vpshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px) rotate(-8deg)}40%{transform:translateX(5px) rotate(8deg)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes vpbar{to{transform:scaleX(0)}}
+@keyframes vpcf{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110px) rotate(360deg);opacity:0}}
 </style>
 </head>
 <body data-company="Kisan Enterprises">
@@ -3782,7 +3804,19 @@ function vibePop(list, type) {
       var tt = { late: 'Late punch', short: 'Short day', great: 'Great work' }[x.tone];
       var d = document.createElement('div');
       d.className = 'vp vp-' + x.tone;
-      d.innerHTML = '<div class="vp-i">' + ic + '</div><div class="vp-t"><b>' + tt + '</b><span>' + esc(x.text) + '</span></div><button class="vp-x" aria-label="Close">&times;</button>';
+      var GZ = {
+        late: ['Not you being late 💀', 'Bro really slept in 😭', 'Lowkey late, no cap', 'Bestie, traffic or neend?'],
+        short: ['Short day, kinda sus 👀', 'Left early? Bold move', 'Bro, shift ended early'],
+        great: ['Absolute W, big boss 🏆', 'You ate, no crumbs', 'Main character energy, fr', 'Slayed the whole shift']
+      };
+      var gl = GZ[x.tone] || GZ.great, gz = gl[Math.floor(Math.random() * gl.length)];
+      var cf = '';
+      if (x.tone === 'great') {
+        ['🎉', '✨', '🎊', '⭐', '✨', '🎉'].forEach(function (c, k) {
+          cf += '<span class="vp-cf" style="left:' + (8 + k * 15) + '%;animation-delay:' + (k * 0.12) + 's">' + c + '</span>';
+        });
+      }
+      d.innerHTML = '<div class="vp-i">' + ic + '</div><div class="vp-t"><b>' + tt + '</b><span class="vp-g">' + esc(gz) + '</span></div><button class="vp-x" aria-label="Close">&times;</button><i class="vp-bar"></i>' + cf;
       d.onclick = function () { d.remove(); };
       document.body.appendChild(d);
       setTimeout(function () { d.classList.add('out'); setTimeout(function () { d.remove(); }, 300); }, 7000);
