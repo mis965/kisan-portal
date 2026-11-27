@@ -2458,6 +2458,22 @@ body:has(.ov) #fldFab{display:none}
 .lite .vp-early .vp-i{animation:vplaunch 1.1s ease-in-out .5s 3!important}
 @keyframes vplaunch{0%,100%{transform:translate(0,0) rotate(0) scale(1)}40%{transform:translate(8px,-14px) rotate(-12deg) scale(1.3)}70%{transform:translate(-2px,3px) rotate(4deg) scale(1.05)}}
 @keyframes vpcf{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110px) rotate(360deg);opacity:0}}
+/* ===== GEM MASCOT ===== */
+#gem{position:fixed;left:14px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:23;width:64px;height:78px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+@media(min-width:761px){#gem{left:236px;bottom:18px}}
+body:has(.ov) #gem{display:none}
+#gem svg,.vp-i svg{width:100%;height:100%;overflow:visible;display:block}
+.gem-sh{fill:rgba(15,61,94,.18)}
+.gem-ey-h{opacity:0}
+.gem-happy .gem-ey{opacity:0}.gem-happy .gem-ey-h{opacity:1}
+.lite #gem .gem-bd,.lite .vp-i .gem-bd{animation:gemFloat 2.6s ease-in-out infinite!important}
+.lite #gem .gem-sh,.lite .vp-i .gem-sh{animation:gemShadow 2.6s ease-in-out infinite!important;transform-origin:50px 98px}
+.lite #gem .gem-ey,.lite .vp-i .gem-ey{animation:gemBlink 4s infinite!important;transform-origin:50px 48px}
+.lite #gem.gem-happy .gem-sp,.lite .vp-i.gem-happy .gem-sp{animation:gemTurn 1.7s ease-in-out both!important;transform-origin:50px 50px}
+@keyframes gemFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes gemShadow{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(.78);opacity:.5}}
+@keyframes gemBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+@keyframes gemTurn{0%{transform:rotate(0)}30%{transform:rotate(-50deg)}45%{transform:rotate(-38deg)}60%{transform:rotate(-48deg)}100%{transform:rotate(0)}}
 </style>
 </head>
 <body data-company="Kisan Enterprises">
@@ -3822,9 +3838,9 @@ function vibePop(list, type) {
           cf += '<span class="vp-cf" style="left:' + (8 + k * 15) + '%;animation-delay:' + (k * 0.12) + 's">' + c + '</span>';
         });
       }
-      d.innerHTML = '<div class="vp-i">' + ic + '</div><div class="vp-t"><b>' + tt + '</b><span class="vp-g">' + esc(gz) + '</span></div><button class="vp-x" aria-label="Close">&times;</button><i class="vp-bar"></i>' + cf;
+      d.innerHTML = '<div class="vp-i" style="width:44px;height:54px">' + gemSvg() + '</div><div class="vp-t"><b>' + tt + '</b><span class="vp-g">' + esc(gz) + '</span></div><button class="vp-x" aria-label="Close">&times;</button><i class="vp-bar"></i>' + cf;
       d.onclick = function () { d.remove(); };
-      document.body.appendChild(d);
+      document.body.appendChild(d); gemHappy(d.querySelector('.vp-i'));
       setTimeout(function () { d.classList.add('out'); setTimeout(function () { d.remove(); }, 300); }, 7000);
     }, i * 400);
   });
@@ -6395,6 +6411,30 @@ H.faReqSave = function (d, b) {
   var keys = $$('.faRq:checked').map(function (c) { return c.value; });
   run(b, function () { return A('fldReqSave', { required: keys }).then(function (r) { toast(r.message); reload(); }); });
 };
+
+/* ---------- GEM MASCOT ---------- */
+function gemSvg() {
+  return '<svg viewBox="0 0 100 104"><ellipse class="gem-sh" cx="50" cy="98" rx="24" ry="4.5"/>' +
+    '<g class="gem-bd"><g class="gem-sp">' +
+    '<polygon points="50,6 94,50 50,94 6,50" fill="#e8691f" stroke="#1a2b2b" stroke-width="4" stroke-linejoin="round"/>' +
+    '<polygon points="50,9 91,50 50,50 9,50" fill="#ffb878"/>' +
+    '<polygon points="50,26 74,50 50,74 26,50" fill="#ff8c3a" stroke="#d9722b" stroke-width="1.5"/></g>' +
+    '<g class="gem-ey"><ellipse cx="42" cy="48" rx="3.4" ry="5.6" fill="#111"/><ellipse cx="58" cy="48" rx="3.4" ry="5.6" fill="#111"/>' +
+    '<circle cx="43" cy="45.5" r="1.1" fill="#fff"/><circle cx="59" cy="45.5" r="1.1" fill="#fff"/></g>' +
+    '<g class="gem-ey-h" fill="none" stroke="#1a2b2b" stroke-width="2.4" stroke-linecap="round"><path d="M36 50q6-7 12 0"/><path d="M52 50q6-7 12 0"/></g>' +
+    '</g></svg>';
+}
+function gemHappy(el) {
+  el = el || document.getElementById('gem'); if (!el) return;
+  el.classList.add('gem-happy');
+  setTimeout(function () { el.classList.remove('gem-happy'); }, 1800);
+}
+(function () {
+  var g = document.createElement('div'); g.id = 'gem'; g.innerHTML = gemSvg();
+  document.body.appendChild(g);
+  g.addEventListener('click', function () { gemHappy(g); });
+  setInterval(function () { if (!document.hidden) gemHappy(g); }, 9000);
+})();
 
 /* ---------- boot ---------- */
 setTimeout(function () {   // decorative font loads after the page is already visible
