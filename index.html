@@ -2678,7 +2678,7 @@ function attRestore() {
 var FAST = {};
 var RD = { 'emp|home': 1, 'emp|applications': 1, 'emp|holidays': 1, 'emp|myLeaves': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|listUnauthorized': 1, 'adm|bonusList': 1, 'adm|listHolidays': 1, 'adm|listAdmins': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1,  'adm|attFlags': 1 };
 var SOFT = { 'emp|home': 1, 'emp|applications': 1, 'adm|dashboard': 1, 'adm|listEmployees': 1, 'adm|listApplications': 1, 'adm|balanceSummary': 1, 'adm|attList': 1, 'adm|attPending': 1, 'adm|attRegister': 1, 'adm|attFlags': 1, 'adm|payslipList': 1, 'adm|salaryStatement': 1, 'adm|salaryDues': 1, 'emp|payslip': 1, 'emp|wageTracker': 1, 'emp|payAccList': 1, 'emp|attMonth': 1 };
-var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|fldOdo': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1, 'adm|fldVisits': 1, 'adm|fldVisit': 1, 'adm|fldPhoto': 1, 'adm|fldTrips': 1, 'adm|fldReqGet': 1, 'adm|lateList': 1 };
+var RO = { 'adm|attDetail': 1, 'adm|salaryStatementPdf': 1, 'adm|payslip': 1, 'adm|payslipPdf': 1, 'adm|payslipAccess': 1, 'adm|payAccGet': 1, 'emp|payslipPdf': 1, 'adm|attPhoto': 1, 'emp|attToday': 1, 'emp|attPhoto': 1, 'emp|attCheck': 1, 'emp|fldToday': 1, 'emp|fldPhoto': 1, 'emp|fldSelfie': 1, 'emp|fldFormInfo': 1, 'emp|fldVisitSave': 1, 'emp|fldOdo': 1, 'emp|preview': 1, 'emp|notifyAdmin': 1, 'emp|ackPolicy': 1, 'emp|logout': 1, 'adm|logout': 1, 'adm|me': 1, 'adm|getApplication': 1, 'adm|getDocument': 1, 'adm|ledger': 1, 'adm|keList': 1, 'adm|keProfile': 1, 'adm|binList': 1, 'adm|listLog': 1, 'adm|bonusRules': 1, 'adm|keMigrationPreview': 1, 'adm|suggestPenalty': 1, 'adm|notifyEmployee': 1, 'adm|advList': 1, 'emp|payAccAdvList': 1, 'adm|fldVisits': 1, 'adm|fldVisit': 1, 'adm|fldPhoto': 1, 'adm|fldTrips': 1, 'adm|fldReqGet': 1, 'adm|lateList': 1, 'adm|extraList': 1 };
 
 function ckey(k, p) {
   var q = {}, cy = new Date().getFullYear();
@@ -3649,7 +3649,7 @@ function navApply(force) {
   });
 }
 H.navgrp = function (d) { S.navOpen = S.navOpen || {}; S.navOpen[d.g] = !S.navOpen[d.g]; navApply(false); };
-var AN = [['dash', 'Dashboard', '&#9632;'], ['aatt', 'Attendance', '&#10003;'], ['leave', 'Leave', '&#9998;', [['aapps', 'Applications'], ['manual', 'Manual Leave Entry'], ['una', 'Unauthorized Leave'], ['bal', 'Balances & Ledger']]], ['emps', 'Employees', '&#9787;'], ['fvis', 'Field Visits', '&#9873;'], ['payg', 'Payments', '&#8377;', [['pay', 'Payslips'], ['sstmt', 'Salary statement'], ['adv', 'Advances']]],
+var AN = [['dash', 'Dashboard', '&#9632;'], ['aatt', 'Attendance', '&#10003;'], ['leave', 'Leave', '&#9998;', [['aapps', 'Applications'], ['manual', 'Manual Leave Entry'], ['una', 'Unauthorized Leave'], ['bal', 'Balances & Ledger']]], ['emps', 'Employees', '&#9787;'], ['fvis', 'Field Visits', '&#9873;'], ['payg', 'Payments', '&#8377;', [['pay', 'Payslips'], ['sstmt', 'Salary statement'], ['adv', 'Advances'], ['extra', 'Extra work']]],
   ['bonus', 'Diwali Bonus', '&#9733;'], ['ahol', 'Public Holidays', '&#9728;'], ['|'], ['set', 'Settings', '&#9881;'], ['admins', 'Administrators', '&#9823;'], ['log', 'System Log', '&#9783;'], ['pwd', 'Change Password', '&#9919;']];
 var BI = {
   pay: '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5"/><path d="M9 16h2.5a2 2 0 0 0 0-4"/></svg>',
@@ -3670,7 +3670,7 @@ function bnavHtml() {
   }).join('') + '<a class="bn-more" data-a="burger"><i>' + BI.more + '</i>More</a></div>';
 }
 function bnavSync(p) {
-  if (p === 'sstmt') p = 'pay';
+  if (p === 'sstmt' || p === 'extra') p = 'pay';
   var hit = false;
   $$('#bnav a[data-p]').forEach(function (a) {
     var on = a.getAttribute('data-p') === p; if (on) hit = true;
@@ -5767,9 +5767,11 @@ function wageCard(w) {
     (w.paidLeave ? '<span class="pc-ch">Paid leave <b>' + w.paidLeave + '</b></span>' : '') +
     (w.absent ? '<span class="pc-ch lop">Absent <b>' + w.absent + '</b></span>' : '') +
     (w.otherLeave ? '<span class="pc-ch">Other leave <b>' + w.otherLeave + '</b></span>' : '') +
+    (w.extra ? '<span class="pc-ch bn">Extra work <b>&#8377;' + inr(w.extra) + '</b></span>' : '') +
     (w.pending ? '<span class="pc-ch">Awaiting approval <b>' + w.pending + '</b></span>' : '') + '</div>' +
     (w.pending ? '<div class="msg w">' + w.pending + ' day(s) are waiting for Admin approval (&#8377;' + inr(w.holdAmt) + '). If not approved, your pay would be about &#8377;' + inr(w.projected) + '.</div>' : '') +
     (w.bonus ? '<div class="msg o">Diwali bonus of &#8377;' + inr(w.bonus) + ' is included this month.</div>' : '') +
+    (w.extra ? '<div class="msg o">Extra work of &#8377;' + inr(w.extra) + ' (' + w.extraDays + (w.extraDays === 1 ? ' day' : ' days') + ') is included this month.</div>' : '') +
     '<div class="hint">Estimate only: it assumes you are present for the rest of the month. One day\'s pay is &#8377;' + inr(w.rate) + ' (salary / ' + w.base + '). The final payslip appears after the month ends.</div></div>';
 }
 PG.eslip = function () {
@@ -5819,7 +5821,7 @@ PG.salpay = function () {
       }
       return '<div class="pc"><div class="pc-h"><div class="bc-av">' + esc(ini_(x.name)) + '</div><div class="bc-id"><b>' + esc(x.name) + '</b><small>' + esc(x.empId) + (x.dept ? ' &middot; ' + esc(x.dept) : '') + '</small></div>' +
         '<div class="pc-net"><small>Net pay</small><b>' + (x.net == null ? '-' : '&#8377;' + inr(x.net)) + '</b></div></div>' +
-        '<div class="pc-m" style="margin-top:10px">' + st + '<span style="margin-left:auto">' + btn + '</span></div></div>';
+        '<div class="pc-m" style="margin-top:10px">' + st + (x.extra ? '<span class="pc-ch bn">Includes extra work <b>&#8377;' + inr(x.extra) + '</b></span>' : '') + '<span style="margin-left:auto">' + btn + '</span></div></div>';
     }).join('');
     main(nav + '<p><button class="btn" data-a="go" data-p="spadv">Advances</button></p><div class="msg i">Pay the employee from the bank, then tap <b>Mark as Paid</b>. Only finished months are shown. A slip is ready only when no day is waiting for Admin approval.</div>' + top +
       (ready.length ? '<p><button class="btn ok" data-a="spAll">Mark all ready as Paid (' + ready.length + ')</button></p>' : '') +
@@ -5946,11 +5948,12 @@ H.psPdf = function (d, b) {
 /* ======================= PAYMENTS: Payslips cards, Salary statement, Dues ======================= */
 function inrF(n) { return n == null ? '-' : Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 }); }
 function payTabs(act) {
-  return '<div class="chips">' + [['pay', 'Payslips'], ['stmt', 'Salary statement'], ['dues', 'Dues']].map(function (x) {
+  return '<div class="chips">' + [['pay', 'Payslips'], ['stmt', 'Salary statement'], ['dues', 'Dues'], ['extra', 'Extra work']].map(function (x) {
     return '<a class="chp' + (act === x[0] ? ' on' : '') + '" data-a="payGo" data-t="' + x[0] + '">' + x[1] + '</a>';
   }).join('') + '</div>';
 }
 H.payGo = function (d) {
+  if (d.t === 'extra') { H.go({ p: 'extra' }); return; }
   if (d.t === 'pay') { H.go({ p: 'pay' }); return; }
   S.ssView = d.t; H.go({ p: 'sstmt' });
 };
@@ -5994,6 +5997,7 @@ var top = '<div class="bl-top">' + box('Employees', rows.length) + box('Expected
         '<div class="pc-m">' + tag + '<span class="pc-ch">Net pay <b>&#8377;' + inrF(r.net) + '</b></span>' + lopCh +
         '<span class="pc-ch">Deductions <b>&#8377;' + inrF(r.deductions) + '</b></span>' +
         (r.bonus ? '<span class="pc-ch bn">Bonus <b>&#8377;' + inrF(r.bonus) + '</b></span>' : '') +
+        (r.extra ? '<span class="pc-ch bn">Extra work <b>&#8377;' + inrF(r.extra) + '</b></span>' : '') +
         (r.inactive ? '<span class="pc-ch">Inactive' + (r.inactiveFrom ? ' from <b>' + esc(fd(r.inactiveFrom)) + '</b>' : '') + '</span>' : '') +
         '<span class="pc-go">View slip &rsaquo;</span></div>' +
         (wn ? '<div class="pc-w">&#9888; ' + esc(r.warnings[0]) + '</div>' : '') + '</div>';
@@ -6429,6 +6433,60 @@ H.faReqSave = function (d, b) {
   run(b, function () { return A('fldReqSave', { required: keys }).then(function (r) { toast(r.message); reload(); }); });
 };
 
+/* ======================= ADMIN: EXTRA WORK ======================= */
+var EXM = '';
+PG.extra = function () {
+  return Promise.all([S.emps.length ? S.emps : A('listEmployees'), A('extraList', { month: EXM })]).then(function (r) {
+    S.emps = r[0]; var d = r[1];
+    if (d.restricted) { main('<h2>Payments</h2>' + payTabs('extra') + '<div class="msg w">Extra Work is restricted to the Owner admin.</div>'); return; }
+    EXM = d.month; S.exl = d.list; S.exOn = d.enabled;
+    var note = d.enabled
+      ? '<div class="msg i">Enter the amount for each extra work day. It is added to that month\'s payslip as an earning.</div>'
+      : '<div class="msg w">Extra Work is switched <b>OFF</b>, so nothing is added to payslips. Turn it on in <b>Settings &gt; Extra Work</b>.</div>';
+    var nav = '<div class="pc-top"><div class="cal-nav"><button class="btn sm ghost" data-a="exGo" data-m="' + esc(d.prev) + '" aria-label="Previous month">&lsaquo;</button>' + mPick('exGo', d.month) +
+      '<button class="btn sm ghost" data-a="exGo" data-m="' + esc(d.next || '') + '" aria-label="Next month"' + (d.next ? '' : ' disabled') + '>&rsaquo;</button></div></div>';
+    var rows = d.list.map(function (x) {
+      return '<tr><td>' + esc(x.dateD) + '</td><td><b>' + esc(x.name) + '</b><div class="hint">' + esc(x.empId) + '</div></td>' +
+        '<td class="num">' + inrF(x.amount) + '</td><td>' + esc(x.note || '-') + '</td><td>' +
+        (x.voided ? '<span class="badge b-REJECTED">Voided</span><div class="hint">' + esc(x.voidReason) + '</div>'
+          : '<span class="badge b-APPROVED">' + (d.enabled ? 'On payslip' : 'Saved') + '</span>') + '</td><td>' +
+        ((x.voided || !d.enabled) ? '' : '<button class="btn sm" data-a="exForm" data-id="' + esc(x.id) + '">Edit</button> <button class="btn sm bad" data-a="exVoid" data-id="' + esc(x.id) + '">Void</button>') + '</td></tr>';
+    });
+    main('<h2>Payments</h2>' + payTabs('extra') + nav + note +
+      '<div class="bl-top" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><span>Entries</span><b>' + d.list.filter(function (x) { return !x.voided; }).length + '</b></div><div><span>Total extra work</span><b>&#8377;' + inrF(d.total) + '</b></div></div>' +
+      (d.enabled ? '<p><button class="btn" data-a="exForm">+ Add extra work</button></p>' : '') +
+      '<div class="card">' + tbl(['Date', 'Employee', 'Amount (Rs)', 'Note', 'Status', ''], rows, 'No extra work recorded this month.', true) + '</div>');
+  });
+};
+H.exGo = function (d) { if (!d.m) return; EXM = d.m; reload(); };
+H.exForm = function (d) {
+  var x = d.id ? S.exl.filter(function (y) { return y.id === d.id; })[0] : null;
+  var t = new Date(), td = t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2) + '-' + ('0' + t.getDate()).slice(-2);
+  S.exid = d.id || '';
+  modal(x ? 'Edit extra work' : 'Add extra work',
+    fld('Employee', x ? '<input type="text" value="' + esc(x.name) + ' (' + esc(x.empId) + ')" disabled>' : '<select id="exE">' + empOpts('', 'Select employee', true) + '</select>') +
+    fld('Date', '<input type="date" id="exD" value="' + esc(x ? x.date : td) + '" max="' + td + '"' + (x ? ' disabled' : '') + '>') +
+    fld('Amount for this day (Rs)', '<input type="number" min="1" step="any" id="exA" value="' + esc(x ? x.amount : '') + '" inputmode="decimal">') +
+    fld('Note (optional)', '<input type="text" id="exN" maxlength="300" value="' + esc(x ? x.note : '') + '" placeholder="e.g. Sunday stock work">'),
+    '<button class="btn gr" data-a="mclose">Cancel</button><button class="btn ok" data-a="exSave">Save</button>');
+};
+H.exSave = function (d, b) {
+  var p = { eid: S.exid, empId: v('exE'), date: v('exD'), amount: v('exA'), note: v('exN') };
+  if (!p.eid && !p.empId) { toast('Please select the employee.', true); return; }
+  if (!(parseFloat(p.amount) > 0)) { toast('Please enter the amount.', true); return; }
+  run(b, function () { return A('extraSave', p).then(function (r) { closeModal(); toast(r.message); reload(); }); }, 'Saving...');
+};
+H.exVoid = function (d) {
+  S.exid = d.id;
+  modal('Void extra work', fld('Reason (mandatory)', '<input type="text" id="exR" maxlength="300">') +
+    '<div class="hint">The amount is removed from the payslip. The entry stays in the list as Voided.</div>',
+    '<button class="btn gr" data-a="mclose">Close</button><button class="btn bad" data-a="exVoidDo">Void entry</button>', true);
+};
+H.exVoidDo = function (d, b) {
+  var why = v('exR').trim();
+  if (why.length < 3) { toast('Please enter the reason.', true); return; }
+  run(b, function () { return A('extraVoid', { id: S.exid, reason: why }).then(function (r) { closeModal(); toast(r.message); reload(); }); });
+};
 window.klBack = function () {
   try {
     if (!S.role) return false;
