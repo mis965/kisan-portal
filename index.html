@@ -5274,7 +5274,8 @@ function empRender(l) {
   var own = S.user && S.user.role === 'OWNER';
   var act = l.filter(function (e) { return e.status === 'Active'; }).length;
   var withCL = l.filter(function (e) { return e.allowed.indexOf('CL') > -1; }).length;
-  var rows = l.length ? l.map(function (e) {
+  var vis = S.empInact ? l : l.filter(function (e) { return e.status === 'Active'; });
+  var rows = vis.length ? vis.map(function (e) {
     var on = e.status === 'Active';
     return '<div class="ep-g ep-r' + (on ? '' : ' off') + '">' +
       '<div class="ep-nm"><div class="ep-mo">' + esc(ini_(e.name)) + '</div><div><b>' + esc(e.name) + '</b><small>' + esc(e.id) + '</small></div></div>' +
@@ -5289,9 +5290,11 @@ function empRender(l) {
   main('<h2>Employees</h2><div class="emp-act"><button class="btn" data-a="kfNew">+ New employee</button><button class="btn" data-a="keOpen">+ Add existing KE employee</button>' +
     (own ? '<button class="btn gr bin-ic" data-a="binOpen" title="Bin" aria-label="Bin"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg></button>' : '') + '</div>' +
     '<div class="ep-sg"><div class="ep-st"><span>Employees</span><b>' + l.length + '</b></div><div class="ep-st"><span>Active</span><b>' + act + '</b></div><div class="ep-st"><span>Inactive</span><b>' + (l.length - act) + '</b></div><div class="ep-st"><span>With casual leave</span><b>' + withCL + '</b></div></div>' +
-    '<div class="ep-pn"><div class="ep-tb"><b>Employee directory</b><span>' + l.length + ' records</span></div>' +
+    '<div class="pn-sw"><div><b>Include inactive employees</b><small>ON = inactive employees are shown in the list (' + (l.length - act) + ' inactive). OFF = only active employees are shown.</small></div><label class="sw"><input type="checkbox" data-ch="empInact"' + (S.empInact ? ' checked' : '') + '><i></i></label></div>' +
+    '<div class="ep-pn"><div class="ep-tb"><b>Employee directory</b><span>' + vis.length + ' records</span></div>' +
     '<div class="ep-g ep-h"><div>Employee</div><div>Contact</div><div>Department</div><div class="c" title="Casual leave balance">CL</div><div class="c" title="Sick leave balance">SL</div><div>Status</div><div></div></div>' + rows + '</div>');
 }
+CHG.empInact = function (el) { S.empInact = el.checked; empRender(S.emps); };
 PG.emps = function () {
   return A('listEmployees').then(function (l) {
     empRender(l);
