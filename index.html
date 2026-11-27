@@ -5866,7 +5866,6 @@ H.accSet = function () {
 H.accSave = function (d, b) {
   run(b, function () { return A('payAccSave', { id: v('accSel') }).then(function (r) { closeModal(); toast(r.message); }); });
 };
-
 /* ======================= ADMIN: holidays ======================= */
 PG.ahol = function () {
   return A('listHolidays', { year: S.hy }).then(function (d) {
