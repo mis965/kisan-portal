@@ -3398,13 +3398,21 @@ function hpush(st) { try { history.pushState(st, ''); } catch (e) { } }
 S.armed = false;
 function bkArm() { try { history.pushState({ k: 1 }, ''); S.armed = true; } catch (e) { } }
 document.addEventListener('click', function () { if (S.role && !S.armed) bkArm(); }, true);
+var lastBackWarn = 0;
 window.addEventListener('popstate', function () {
   S.armed = false;
   if (!S.role) return;
   var handled = false;
   try { handled = window.klBack ? window.klBack() : false; } catch (e) { }
   if (handled) { bkArm(); return; }
+  if (Date.now() - lastBackWarn < 2000) {      // second Back within 2 seconds: really exit
+    var br = getBridge();
+    if (br && br.exitApp) br.exitApp(); else history.back();
+    return;
+  }
+  lastBackWarn = Date.now();
   toast('Press back again to exit');
+  bkArm();                                     // keep the guard so the first Back never exits
 });
 
 /* ---------- modal ---------- */
@@ -3681,7 +3689,8 @@ function bnavSync(p) {
 function shell() {
   var nav = S.role === 'emp' ? EN : AN;
   $('#app').innerHTML = '<div class="top"><button class="burger" data-a="burger">&#9776;</button><div class="brand"><span class="blg">' + logoHtml() + '</span><span class="bnm">' + esc(CO) + '<small>' + (S.role === 'emp' ? 'Employee Portal' : 'Admin Portal') + '<span class="bu"> &middot; ' + esc(S.user && S.user.name) + '</span></small></span></div><div class="who"><button class="btn sm ghost rf" data-a="rfr" aria-label="Refresh">&#8635;</button><span class="nm">' + esc(S.user && S.user.name) + '</span><span class="chip">' + (S.role === 'emp' ? 'Employee' : 'Admin') + '</span><button class="btn sm ghost" data-a="logout">Sign out</button></div></div><div class="lay"><nav id="nav">' + navHtml(nav) + '<div class="sep so"></div><a class="so" data-a="logout">&#9211; Sign out</a></nav><main id="main"></main></div>' + bnavHtml() + fabHtml() + fieldFabHtml();
-  tellReady();
+   tellReady();
+  if (!S.armed) bkArm();
 }
 H.burger = function () { $('#nav').classList.toggle('open'); };
 H.rfr = function () { RC = {}; GEN++; reload(); };
