@@ -3494,7 +3494,7 @@ function save() {
   try { localStorage.setItem('kl', s); } catch (e) { try { sessionStorage.setItem('kl', s); } catch (x) { } }
 }
 function signOut(msg) {
-  S.token = null; S.fieldOn = false; FLD.actor = ''; FLD.picked = false; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
+  S.token = null; S.hist = []; S.fieldOn = false; FLD.actor = ''; FLD.picked = false; S.role = null; S.user = null; S.emps = []; S.df = {}; S.af = {}; S.page = null; S.allowed = null; AT.data = null; AT.cal = null; AT.uid = ''; AT.ph = {}; CAL.data = null; CAL.sel = ''; CAL.uid = ''; loggingOut = false; RC = {}; GEN++; S.warmed = false;
   try { localStorage.removeItem('kl'); } catch (e) { }
   try { sessionStorage.removeItem('kl'); } catch (e) { }
   try { localStorage.removeItem('klc'); localStorage.removeItem('kla2'); } catch (e) { }
@@ -3703,6 +3703,8 @@ document.addEventListener('visibilitychange', function () {
 });
 H.go = function (d) {
   var prev = S.page;
+  S.hist = S.hist || [];
+  if (prev && prev !== d.p && !d.back) { S.hist.push(prev); if (S.hist.length > 30) S.hist.shift(); }
   S.page = d.p; $$('#nav a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-p') === d.p); }); navApply(true); bnavSync(d.p); fabSync(d.p); fieldFabSync(d.p); S.anim = true; var n = $('#nav'); if (n) n.classList.remove('open');
   clearTimeout(S.lt); S.lt = setTimeout(loader, 150); if (!d.pop) window.scrollTo(0, 0); Promise.resolve().then(function () { return PG[d.p](); }).then(function () { if (!S.warmed && S.role) { S.warmed = true; setTimeout(warm, 600); } }).catch(function (e) { if (e.code === 'AUTH') signOut(e.message); else if (S.page === d.p) main('<div class="msg e">' + esc(e.message) + '</div>'); });
 };
@@ -4496,7 +4498,7 @@ H.submit = function (d, b) {
       if (f.size > S.cfg.maxUploadMb * 1024 * 1024) { rej(new Error('The file is larger than ' + S.cfg.maxUploadMb + ' MB.')); return; }
       var r = new FileReader(); r.onload = function () { res({ name: f.name, mime: f.type, data: String(r.result).split(',')[1] }); }; r.onerror = function () { rej(new Error('Could not read the file.')); }; r.readAsDataURL(f);
     }) : Promise.resolve(null);
-    return rd.then(function (file) { if (file) p.file = file; return E('submit', p); }).then(function (r) { toast(r.message); if (r.notify) bg('emp', 'notifyAdmin', { id: r.id }); dropPrefix('emp|'); H.go({ p: 'apps' }); });
+    return rd.then(function (file) { if (file) p.file = file; return E('submit', p); }).then(function (r) { toast(r.message); if (r.notify) bg('emp', 'notifyAdmin', { id: r.id }); dropPrefix('emp|');S.hist = S.hist.filter(function (x) { return x !== 'apply'; }); H.go({ p: 'apps' }); });
   });
 };
 PG.apps = function () {
@@ -6497,6 +6499,7 @@ window.klBack = function () {
     if (S.mo) { closeModal(); return true; }
     var nav = $('#nav'); if (nav && nav.classList.contains('open')) { nav.classList.remove('open'); return true; }
     var fb = $('#fab'); if (fb && fb.classList.contains('open')) { fb.classList.remove('open'); return true; }
+    if (S.hist && S.hist.length) { var pg = S.hist.pop(); H.go({ p: pg, back: true }); return true; }
     var home = S.role === 'emp' ? 'home' : 'dash';
     if (S.page && S.page !== home) { H.go({ p: home }); return true; }
     return false;
